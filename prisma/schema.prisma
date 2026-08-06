@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+
+  id        String   @id @default(cuid())
+
+  email     String   @unique
+
+  name      String?
+
+
+  methods   SavedMethod[]
+
+
+  createdAt DateTime @default(now())
+
+}
+
+
+
+model SavedMethod {
+
+  id          String   @id @default(cuid())
+
+
+  userId      String
+
+  user        User @relation(
+
+    fields:[userId],
+
+    references:[id],
+
+    onDelete:Cascade
+
+  )
+
+
+  name        String
+
+  compound    String
+
+  column      String
+
+  mobilePhase String
+
+  pH          Float
+
+  gradient    String
+
+
+  createdAt   DateTime @default(now())
+
+}
