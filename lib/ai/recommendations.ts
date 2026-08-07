@@ -1,109 +1,118 @@
-import {
-  CompoundProperties,
-  MethodConditions,
-  predictRetention,
-} from "./retention";
+import { Method } from "./retention";
+
 
 export interface Recommendation {
 
   title: string;
 
-  reason: string;
+  message: string;
 
-  priority: "High" | "Medium" | "Low";
+  priority: "low" | "medium" | "high";
 
 }
 
+
+
 export function generateRecommendations(
 
-  compound: CompoundProperties,
-
-  method: MethodConditions
+  method: Method
 
 ): Recommendation[] {
 
-  const prediction = predictRetention(
-    compound,
-    method
-  );
 
   const recommendations: Recommendation[] = [];
 
-  if (prediction.k < 2) {
+
+
+  const flow = method.flow ?? 1.0;
+
+  const organic = method.organic ?? 50;
+
+  const pH = method.pH ?? 7;
+
+
+
+  if (flow > 1.5) {
+
 
     recommendations.push({
 
-      title: "Increase Retention",
+      title: "High Flow Rate",
 
-      reason:
-        "Retention factor (k) is below the recommended range. Reduce the percentage of organic solvent or lower the column temperature.",
+      message:
 
-      priority: "High"
+        "Consider reducing flow rate to improve efficiency and reduce pressure.",
+
+      priority: "medium"
 
     });
 
+
   }
 
-  if (prediction.k > 10) {
+
+
+  if (organic > 70) {
+
 
     recommendations.push({
 
-      title: "Reduce Runtime",
+      title: "High Organic Content",
 
-      reason:
-        "Retention is excessive. Increase the percentage of organic solvent or increase the flow rate.",
+      message:
 
-      priority: "Medium"
+        "Reducing organic percentage may increase retention and improve separation.",
+
+      priority: "medium"
 
     });
 
+
   }
 
-  if (method.flow > 1.5) {
+
+
+  if (pH < 3) {
+
 
     recommendations.push({
 
-      title: "Check System Pressure",
+      title: "Low pH Condition",
 
-      reason:
-        "High flow rates may increase backpressure and reduce column lifetime.",
+      message:
 
-      priority: "Medium"
+        "Verify analyte stability and column compatibility under acidic conditions.",
 
-    });
-
-  }
-
-  if (method.temperature < 25) {
-
-    recommendations.push({
-
-      title: "Increase Column Temperature",
-
-      reason:
-        "A higher temperature may improve mass transfer and peak efficiency.",
-
-      priority: "Low"
+      priority: "low"
 
     });
 
+
   }
+
+
 
   if (recommendations.length === 0) {
 
+
     recommendations.push({
 
-      title: "Method Looks Good",
+      title: "Method Status",
 
-      reason:
-        "Current conditions fall within a practical operating window.",
+      message:
 
-      priority: "Low"
+        "Current method conditions appear acceptable.",
+
+      priority: "low"
 
     });
 
+
   }
 
+
+
   return recommendations;
+
 
 }

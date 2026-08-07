@@ -1,155 +1,76 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
 
-export default function LiveMethodPrediction() {
+export default function LiveMethodPrediction({ ai }: any) {
 
-  const { molecule } = useLabStore();
 
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+  const engine = ai?.engine ?? {};
 
-  const ai = runMethodEngineV3(
+  const prediction = engine.prediction ?? {};
 
-    {
-      molecularWeight: Number(molecule.molecularWeight) || 250,
-      logP: Number(molecule.xlogP) || 2,
-      pKa: 4.5,
-      tpsa: Number(molecule.tpsa) || 40,
-      hBondDonors: Number(molecule.hBondDonors) || 1,
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-    },
+  const system = ai?.system ?? {};
 
-    {
-      organic,
-      flow,
-      temperature,
-      pH
-    }
 
-  );
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-6">
 
-        Live AI Prediction
+      <h2 className="font-bold text-xl mb-4">
+
+        Live Method Prediction
 
       </h2>
 
-      <div className="grid grid-cols-2 gap-4">
 
-        <div className="flex justify-between">
 
-          <span>Retention Time</span>
+      <p>
 
-          <strong>
+        Retention Time: {prediction.retentionTime ?? "-"} min
 
-            {ai.result.engine.prediction.retentionTime} min
+      </p>
 
-          </strong>
 
-        </div>
 
-        <div className="flex justify-between">
+      <p>
 
-          <span>Resolution</span>
+        Resolution: {system.resolution ?? "-"}
 
-          <strong>
+      </p>
 
-            {ai.result.system.resolution}
 
-          </strong>
 
-        </div>
+      <p>
 
-        <div className="flex justify-between">
+        Capacity Factor: {prediction.capacityFactor ?? "-"}
 
-          <span>Capacity Factor</span>
+      </p>
 
-          <strong>
 
-            {ai.result.engine.prediction.capacityFactor}
 
-          </strong>
+      <p>
 
-        </div>
+        Selectivity: {prediction.selectivity ?? "-"}
 
-        <div className="flex justify-between">
+      </p>
 
-          <span>Selectivity</span>
 
-          <strong>
 
-            {ai.result.engine.prediction.selectivity}
+      <p>
 
-          </strong>
+        Peak Width: {prediction.peakWidth ?? "-"} min
 
-        </div>
+      </p>
 
-        <div className="flex justify-between">
 
-          <span>Peak Width</span>
 
-          <strong>
+      <p>
 
-            {ai.result.engine.prediction.peakWidth} min
+        Pressure: {system.pressure ?? "-"} bar
 
-          </strong>
+      </p>
 
-        </div>
-
-        <div className="flex justify-between">
-
-          <span>Pressure</span>
-
-          <strong>
-
-            {ai.result.system.pressure} bar
-
-          </strong>
-
-        </div>
-
-        <div className="flex justify-between">
-
-          <span>Confidence</span>
-
-          <strong>
-
-            {ai.confidence}%
-
-          </strong>
-
-        </div>
-
-        <div className="flex justify-between">
-
-          <span>Status</span>
-
-          <strong className={ai.laboratoryReady ? "text-green-600" : "text-orange-600"}>
-
-            {ai.laboratoryReady ? "READY" : "OPTIMIZE"}
-
-          </strong>
-
-        </div>
-
-      </div>
-
-      <div className="mt-6 rounded-lg bg-blue-50 p-4">
-
-        {ai.summary}
-
-      </div>
 
     </div>
 

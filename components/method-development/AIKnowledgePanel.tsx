@@ -1,117 +1,114 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
 
-export default function AIKnowledgePanel() {
+interface AIKnowledgePanelProps {
 
-  const { molecule } = useLabStore();
+  ai?: any;
 
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+}
 
 
-  const ai = runMethodEngineV3(
 
-    {
-      molecularWeight: Number(molecule.molecularWeight) || 250,
-      logP: Number(molecule.xlogP) || 2,
-      pKa: 4.5,
-      tpsa: Number(molecule.tpsa) || 40,
-      hBondDonors: Number(molecule.hBondDonors) || 1,
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-    },
+export default function AIKnowledgePanel({
 
-    {
-      organic,
-      flow,
-      temperature,
-      pH
-    }
+  ai = {}
 
-  );
+}: AIKnowledgePanelProps) {
+
+
+  const engine = ai.engine ?? {};
+
+  const prediction = engine.prediction ?? {};
+
+  const column = engine.column ?? {};
+
+  const mobilePhase = engine.mobilePhase ?? {};
+
 
 
   const insights = [
 
     {
+
       title: "Column Strategy",
+
       text:
-        `Use ${ai.result.engine.column.column} because it matches predicted analyte properties.`
+
+        `Use ${column.column ?? "recommended column"} because it matches predicted analyte properties.`
+
     },
 
-    {
-      title: "pH Strategy",
-      text:
-        `Operate around pH ${ai.result.pH.pH} using ${ai.result.pH.buffer}.`
-    },
 
     {
-      title: "Gradient Strategy",
+
+      title: "Retention Behavior",
+
       text:
-        `${ai.result.gradient.startB}% to ${ai.result.gradient.endB}% organic over ${ai.result.gradient.time} minutes.`
+
+        `Predicted retention time is ${prediction.retentionTime ?? "-"} min with selectivity ${prediction.selectivity ?? "-"}.`
+
     },
 
-    {
-      title: "Chromatography Prediction",
-      text:
-        `RT ${ai.result.engine.prediction.retentionTime} min with resolution ${ai.result.system.resolution}.`
-    },
 
     {
-      title: "Readiness",
+
+      title: "Mobile Phase Strategy",
+
       text:
-        ai.laboratoryReady
-          ? "Method appears suitable for laboratory evaluation."
-          : "Additional optimization recommended before laboratory testing."
+
+        `Recommended organic phase: ${mobilePhase.organic ?? "-"}. Buffer: ${mobilePhase.buffer ?? "-"}.`
+
     }
+
 
   ];
 
 
+
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        AI Knowledge Engine
+      <h2 className="text-xl font-bold mb-4">
+
+        AI Knowledge Panel
 
       </h2>
 
 
+
       <div className="space-y-4">
 
-        {insights.map((item,index)=>(
+
+        {insights.map((item, index) => (
 
           <div
 
             key={index}
 
-            className="rounded-lg bg-slate-50 border p-4"
+            className="border rounded-lg p-4"
 
           >
 
-            <h3 className="font-bold">
+            <h3 className="font-semibold">
 
               {item.title}
 
             </h3>
 
-            <p className="mt-2 text-slate-700">
+
+            <p className="text-sm text-gray-600 mt-1">
 
               {item.text}
 
             </p>
 
+
           </div>
 
         ))}
+
 
       </div>
 

@@ -1,149 +1,126 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
+
+export default function AIReportGenerator({ ai }: any) {
 
 
-export default function AIReportGenerator() {
+  const engine = ai?.engine ?? {};
 
+  const prediction = engine.prediction ?? {};
 
-  const { molecule } = useLabStore();
+  const column = engine.column ?? {};
 
+  const mobilePhase = engine.mobilePhase ?? {};
 
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+  const system = ai?.system ?? {};
 
-
-
-  function generateReport() {
-
-
-    const ai = runMethodEngineV3(
-
-      {
-        molecularWeight: Number(molecule.molecularWeight) || 250,
-        logP: Number(molecule.xlogP) || 2,
-        pKa: 4.5,
-        tpsa: Number(molecule.tpsa) || 40,
-        hBondDonors: Number(molecule.hBondDonors) || 1,
-        hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-      },
-
-      {
-        organic,
-        flow,
-        temperature,
-        pH
-      }
-
-    );
-
-
-    const report = `
-
-HPLC COPILOT PRO
-AI METHOD DEVELOPMENT REPORT
-
-Compound:
-${molecule.name}
-
-Molecular Weight:
-${molecule.molecularWeight}
-
-Column Recommendation:
-${ai.result.engine.column.column}
-
-Mobile Phase:
-${ai.result.pH.buffer}
-
-pH:
-${ai.result.pH.pH}
-
-Gradient:
-${ai.result.gradient.startB}% → ${ai.result.gradient.endB}%
-
-Predicted Retention:
-${ai.result.engine.prediction.retentionTime} min
-
-Resolution:
-${ai.result.system.resolution}
-
-Tailing:
-${ai.result.system.tailingFactor}
-
-Method Score:
-${ai.result.engine.score}/100
-
-AI Summary:
-${ai.summary}
-
-    `;
-
-
-    const blob = new Blob(
-
-      [report],
-
-      {
-        type:"text/plain"
-      }
-
-    );
-
-
-    const url = URL.createObjectURL(blob);
-
-
-    const link = document.createElement("a");
-
-    link.href = url;
-
-    link.download =
-      "HPLC_Copilot_AI_Method_Report.txt";
-
-
-    link.click();
-
-
-  }
+  const gradient = ai?.gradient ?? {};
 
 
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
 
-      <h2 className="text-2xl font-bold mb-5">
+      <h2 className="text-xl font-bold mb-4">
 
-        AI Report Generator
+        AI Method Report
 
       </h2>
 
 
-      <p className="text-slate-600 mb-5">
-
-        Generate a complete AI method development report.
-
-      </p>
+      <div className="space-y-3 text-sm">
 
 
-      <button
+        <p>
 
-        onClick={generateReport}
+          <b>Column Recommendation:</b><br/>
 
-        className="w-full rounded-lg bg-blue-600 hover:bg-blue-700 text-white py-3 font-semibold"
+          {column.column ?? "-"}
 
-      >
+        </p>
 
-        📄 Generate AI Report
 
-      </button>
+
+        <p>
+
+          <b>Mobile Phase:</b><br/>
+
+          {mobilePhase.organic ?? "-"} /
+
+          {" "}
+
+          {mobilePhase.buffer ?? "-"}
+
+        </p>
+
+
+
+        <p>
+
+          <b>pH:</b>{" "}
+
+          {mobilePhase.pH ?? "-"}
+
+        </p>
+
+
+
+        <p>
+
+          <b>Gradient:</b>{" "}
+
+          {gradient.startB ?? "-"}%
+
+          {" → "}
+
+          {gradient.endB ?? "-"}%
+
+        </p>
+
+
+
+        <p>
+
+          <b>Retention:</b>{" "}
+
+          {prediction.retentionTime ?? "-"} min
+
+        </p>
+
+
+
+        <p>
+
+          <b>Resolution:</b>{" "}
+
+          {system.resolution ?? "-"}
+
+        </p>
+
+
+
+        <p>
+
+          <b>Tailing:</b>{" "}
+
+          {system.tailingFactor ?? "-"}
+
+        </p>
+
+
+
+        <p>
+
+          <b>Score:</b>{" "}
+
+          {engine.score ?? 0}/100
+
+        </p>
+
+
+      </div>
 
 
     </div>

@@ -1,87 +1,89 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { calculateMethodScore } from "@/lib/ai";
 
-export default function MethodScore() {
+interface MethodScoreProps {
 
-  const { molecule } = useLabStore();
+  score?: number;
 
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+  prediction?: {
 
-  const score = calculateMethodScore(
+    retentionTime?: number;
 
-    {
-      molecularWeight: Number(molecule.molecularWeight) || 250,
-      logP: Number(molecule.xlogP) || 2,
-      pKa: 4.5,
-      tpsa: Number(molecule.tpsa) || 40,
-      hBondDonors: Number(molecule.hBondDonors) || 1,
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-    },
+    resolution?: number;
 
-    {
-      organic,
-      flow,
-      temperature,
-      pH
-    }
+    tailingFactor?: number;
 
-  );
+  };
+
+}
+
+
+
+export default function MethodScore({
+
+  score = 0,
+
+  prediction = {}
+
+}: MethodScoreProps) {
+
+
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        AI Method Score
+      <h2 className="text-xl font-bold mb-4">
+
+        Method Score
 
       </h2>
 
-      <div className="text-6xl font-bold text-blue-600">
+
+
+      <div className="text-4xl font-bold text-blue-600">
 
         {score}
 
       </div>
 
-      <div className="mt-4 text-slate-600">
 
-        Method robustness prediction score /100
+
+      <p className="text-sm text-slate-600 mt-2">
+
+        Overall HPLC method quality score
+
+      </p>
+
+
+
+      <div className="mt-4 space-y-2 text-sm">
+
+
+        <p>
+
+          Retention Time: {prediction.retentionTime ?? "-"} min
+
+        </p>
+
+
+        <p>
+
+          Resolution: {prediction.resolution ?? "-"}
+
+        </p>
+
+
+        <p>
+
+          Tailing Factor: {prediction.tailingFactor ?? "-"}
+
+        </p>
+
 
       </div>
 
-      <div className="mt-6 h-4 rounded-full bg-slate-200">
-
-        <div
-
-          className="h-4 rounded-full bg-blue-600"
-
-          style={{
-            width: `${score}%`
-          }}
-
-        />
-
-      </div>
-
-      <div className="mt-5 font-semibold">
-
-        {score >= 90 && "Excellent starting method"}
-
-        {score >= 80 && score < 90 && "Good starting method"}
-
-        {score >= 70 && score < 80 && "Optimization recommended"}
-
-        {score < 70 && "Major optimization required"}
-
-      </div>
 
     </div>
 

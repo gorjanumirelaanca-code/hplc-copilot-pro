@@ -1,141 +1,52 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
 
-export default function MethodReport() {
+export default function MethodReport({ ai }: any) {
 
-  const { molecule } = useLabStore();
+  const engine = ai?.engine ?? {};
 
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+  const column = engine.column ?? {};
 
-  const ai = runMethodEngineV3(
+  const prediction = engine.prediction ?? {};
 
-    {
-      molecularWeight: Number(molecule.molecularWeight) || 250,
-      logP: Number(molecule.xlogP) || 2,
-      pKa: 4.5,
-      tpsa: Number(molecule.tpsa) || 40,
-      hBondDonors: Number(molecule.hBondDonors) || 1,
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-    },
+  const mobilePhase = engine.mobilePhase ?? {};
 
-    {
-      organic,
-      flow,
-      temperature,
-      pH
-    }
 
-  );
 
   return (
 
-    <div className="rounded-xl border shadow-xl bg-white p-8">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h1 className="text-3xl font-bold mb-6">
+      <h2 className="text-xl font-bold mb-4">
+        Method Report
+      </h2>
 
-        AI Method Development Report
 
-      </h1>
+      <p>
+        <b>Recommended Column:</b>
+        <br />
+        {column.column ?? "-"}
+      </p>
 
-      <div className="grid grid-cols-2 gap-6">
 
-        <div>
+      <p>
+        <b>Mobile Phase:</b>
+        <br />
+        {mobilePhase.organic ?? "-"}
+      </p>
 
-          <div className="font-semibold">Compound</div>
 
-          <div>{molecule.name}</div>
+      <p>
+        <b>Retention:</b>{" "}
+        {prediction.retentionTime ?? "-"} min
+      </p>
 
-        </div>
 
-        <div>
+      <p>
+        <b>Score:</b>{" "}
+        {engine.score ?? 0}/100
+      </p>
 
-          <div className="font-semibold">Formula</div>
-
-          <div>{molecule.formula}</div>
-
-        </div>
-
-        <div>
-
-          <div className="font-semibold">Recommended Column</div>
-
-          <div>{ai.result.engine.column.column}</div>
-
-        </div>
-
-        <div>
-
-          <div className="font-semibold">Recommended Buffer</div>
-
-          <div>{ai.result.pH.buffer}</div>
-
-        </div>
-
-        <div>
-
-          <div className="font-semibold">Recommended pH</div>
-
-          <div>{ai.result.pH.pH}</div>
-
-        </div>
-
-        <div>
-
-          <div className="font-semibold">Gradient</div>
-
-          <div>
-
-            {ai.result.gradient.startB}% → {ai.result.gradient.endB}%
-
-          </div>
-
-        </div>
-
-        <div>
-
-          <div className="font-semibold">Predicted Retention</div>
-
-          <div>
-
-            {ai.result.engine.prediction.retentionTime} min
-
-          </div>
-
-        </div>
-
-        <div>
-
-          <div className="font-semibold">Method Score</div>
-
-          <div>{ai.result.engine.score}/100</div>
-
-        </div>
-
-      </div>
-
-      <div className="mt-8 rounded-lg bg-green-50 border border-green-200 p-5">
-
-        <h2 className="font-bold mb-2">
-
-          AI Summary
-
-        </h2>
-
-        <p>
-
-          {ai.summary}
-
-        </p>
-
-      </div>
 
     </div>
 

@@ -1,67 +1,94 @@
-DevelopmentTimeline.tsx"use client";
+"use client";
+
 
 export default function DevelopmentTimeline() {
 
+
   const steps = [
 
-    "Compound Search",
+    {
+      title: "1. Molecule Assessment",
+      description:
+        "Evaluate molecular properties including polarity, pKa, logP, and chromatographic behavior."
+    },
 
-    "Physicochemical Assessment",
+    {
+      title: "2. Column Selection",
+      description:
+        "Recommend appropriate stationary phase chemistry based on analyte characteristics."
+    },
 
-    "Column Selection",
+    {
+      title: "3. Mobile Phase Optimization",
+      description:
+        "Optimize organic modifier, buffer system, pH, and chromatographic conditions."
+    },
 
-    "Mobile Phase Optimization",
+    {
+      title: "4. Method Optimization",
+      description:
+        "Improve retention, resolution, peak shape, and system suitability."
+    },
 
-    "Gradient Optimization",
-
-    "Retention Prediction",
-
-    "System Suitability",
-
-    "Experimental Verification",
-
-    "Method Optimization",
-
-    "Validation"
+    {
+      title: "5. Final Method Report",
+      description:
+        "Generate structured HPLC method development documentation."
+    }
 
   ];
 
+
+
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        Development Workflow
+      <h2 className="text-xl font-bold mb-6">
+
+        Method Development Timeline
 
       </h2>
 
+
+
       <div className="space-y-4">
 
-        {steps.map((step, index) => (
+
+        {steps.map((step,index)=>(
+
 
           <div
+
             key={index}
-            className="flex items-center gap-4"
+
+            className="border-l-4 border-blue-600 pl-4"
+
           >
 
-            <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+            <h3 className="font-bold">
 
-              {index + 1}
+              {step.title}
 
-            </div>
+            </h3>
 
-            <div className="flex-1 rounded-lg bg-slate-50 p-3">
 
-              {step}
+            <p className="text-slate-600 text-sm">
 
-            </div>
+              {step.description}
+
+            </p>
+
 
           </div>
 
+
         ))}
 
+
       </div>
+
 
     </div>
 

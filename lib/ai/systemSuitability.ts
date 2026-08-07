@@ -1,108 +1,205 @@
-import { Molecule, Method } from "./retentionPredictor";
+export interface SystemSuitabilityInput {
 
-export interface SystemSuitability {
+  resolution?: number;
 
-  retentionTime: number;
+  tailingFactor?: number;
 
-  capacityFactor: number;
+  plates?: number;
+
+  retentionTime?: number;
+
+  pressure?: number;
+
+}
+
+
+
+export interface SystemSuitabilityResult {
+
+  pass: boolean;
 
   resolution: number;
 
   tailingFactor: number;
 
-  theoreticalPlates: number;
+  plates: number;
+
+  retentionTime: number;
 
   pressure: number;
 
-  pass: boolean;
-
   comments: string[];
+
+  warnings: string[];
+
+  message: string;
 
 }
 
+
+
 export function predictSystemSuitability(
 
-  molecule: Molecule,
+  input: SystemSuitabilityInput = {}
 
-  method: Method
+): SystemSuitabilityResult {
 
-): SystemSuitability {
 
-  const retentionTime =
-    Math.max(
-      0.6,
-      1.2 +
-      molecule.logP * 2 +
-      (100 - method.organic) * 0.05
-    );
+  const resolution = input.resolution ?? 2.0;
 
-  const capacityFactor =
-    (retentionTime - 0.5) / 0.5;
+  const tailingFactor = input.tailingFactor ?? 1.2;
 
-  const resolution =
-    1.6 +
-    molecule.logP * 0.45;
+  const plates = input.plates ?? 5000;
 
-  const tailingFactor =
-    1 +
-    molecule.hBondDonors * 0.04 +
-    molecule.hBondAcceptors * 0.02;
+  const retentionTime = input.retentionTime ?? 5.0;
 
-  const theoreticalPlates =
-    Math.round(
-      8000 +
-      molecule.molecularWeight * 6
-    );
+  const pressure = input.pressure ?? 250;
 
-  const pressure =
-    Math.round(
-      110 +
-      method.flow * 90 +
-      method.organic * 2.2
-    );
+
 
   const comments: string[] = [];
 
-  if (tailingFactor > 2)
-    comments.push("Peak tailing exceeds recommended limit.");
+  const warnings: string[] = [];
 
-  if (resolution < 2)
-    comments.push("Resolution below target.");
 
-  if (theoreticalPlates < 5000)
-    comments.push("Column efficiency is low.");
 
-  if (pressure > 400)
-    comments.push("Predicted pressure is high.");
+  if (resolution < 1.5) {
 
-  if (comments.length === 0)
-    comments.push("Predicted system suitability is acceptable.");
+    comments.push(
+
+      "Resolution is below recommended acceptance criteria."
+
+    );
+
+    warnings.push(
+
+      "Improve selectivity or optimize mobile phase conditions."
+
+    );
+
+  }
+
+
+
+  if (tailingFactor > 2.0) {
+
+    comments.push(
+
+      "Peak tailing is above recommended limit."
+
+    );
+
+    warnings.push(
+
+      "Investigate column condition and sample chemistry."
+
+    );
+
+  }
+
+
+
+  if (plates < 2000) {
+
+    comments.push(
+
+      "Column efficiency is low."
+
+    );
+
+    warnings.push(
+
+      "Check column performance and system efficiency."
+
+    );
+
+  }
+
+
+
+  if (pressure > 400) {
+
+    comments.push(
+
+      "System pressure is high."
+
+    );
+
+    warnings.push(
+
+      "Inspect flow path, frits, tubing, and column blockage."
+
+    );
+
+  }
+
+
+
+  if (comments.length === 0) {
+
+    comments.push(
+
+      "System suitability parameters are within expected range."
+
+    );
+
+  }
+
+
+
+  const pass =
+
+    resolution >= 1.5 &&
+
+    tailingFactor <= 2.0 &&
+
+    plates >= 2000 &&
+
+    pressure <= 400;
+
+
 
   return {
 
-    retentionTime:
-      Number(retentionTime.toFixed(2)),
 
-    capacityFactor:
-      Number(capacityFactor.toFixed(2)),
+    pass,
 
-    resolution:
-      Number(resolution.toFixed(2)),
 
-    tailingFactor:
-      Number(tailingFactor.toFixed(2)),
+    resolution,
 
-    theoreticalPlates,
+
+    tailingFactor,
+
+
+    plates,
+
+
+    retentionTime,
+
 
     pressure,
 
-    pass:
-      tailingFactor <= 2 &&
-      resolution >= 2 &&
-      theoreticalPlates >= 5000,
 
-    comments
+    comments,
+
+
+    warnings,
+
+
+    message:
+
+      pass
+
+      ? "System suitability criteria passed."
+
+      : "System suitability requires optimization."
 
   };
 
 }
+
+
+
+export const calculateSystemSuitability =
+
+  predictSystemSuitability;

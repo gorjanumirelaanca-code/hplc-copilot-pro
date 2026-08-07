@@ -1,37 +1,61 @@
-export interface MolecularProperties {
+export interface MoleculeProperties {
 
-  molecularWeight: number;
+  name?: string;
 
-  logP: number;
+  molecularWeight?: number;
 
-  pKa: number;
+  logP?: number;
 
-  tpsa: number;
+  pKa?: number;
 
-  hBondDonors: number;
+  tpsa?: number;
 
-  hBondAcceptors: number;
+  hBondDonors?: number;
+
+  hBondAcceptors?: number;
+
+  smiles?: string;
+
+  iupacName?: string;
+
+  formula?: string;
 
 }
 
-export function calculateRetentionScore(
 
-  p: MolecularProperties
+
+export function analyzeMolecule(
+
+  molecule: MoleculeProperties
 
 ) {
 
-  let score = 0;
 
-  score += p.logP * 3;
+  return {
 
-  score -= p.tpsa * 0.02;
 
-  score -= p.hBondDonors * 0.5;
+    ...molecule,
 
-  score -= p.hBondAcceptors * 0.2;
 
-  score += p.molecularWeight / 250;
+    polarity:
 
-  return Number(score.toFixed(2));
+      (molecule.tpsa ?? 0) > 60
+
+      ? "High polarity"
+
+      : "Moderate polarity",
+
+
+    ionization:
+
+      molecule.pKa
+
+      ? `pKa ${molecule.pKa}`
+
+      : "Unknown"
+
+
+  };
+
 
 }

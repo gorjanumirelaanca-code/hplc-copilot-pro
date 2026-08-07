@@ -1,95 +1,149 @@
 "use client";
 
-import {
-  CompoundProperties,
-  MethodConditions,
-} from "@/lib/ai/retention";
-
+import { useMemo } from "react";
+import { calculateRetention } from "@/lib/ai/retention";
 import { generateRecommendations } from "@/lib/ai/recommendations";
 
-interface Props {
 
-  compound: CompoundProperties;
+interface AIRecommendationPanelProps {
 
-  method: MethodConditions;
+  compound?: any;
+
+  method?: any;
 
 }
 
+
+
 export default function AIRecommendationPanel({
 
-  compound,
+  compound = {},
 
-  method,
+  method = {}
 
-}: Props) {
+}: AIRecommendationPanelProps) {
 
-  const recommendations = generateRecommendations(
 
-    compound,
 
-    method
+  const retention = useMemo(() => {
 
-  );
 
-  const priorityColor = {
+    return calculateRetention(
 
-    High: "bg-red-100 text-red-700 border-red-300",
+      compound,
 
-    Medium: "bg-yellow-100 text-yellow-700 border-yellow-300",
+      method
 
-    Low: "bg-green-100 text-green-700 border-green-300",
+    );
 
-  };
+
+  }, [compound, method]);
+
+
+
+
+  const recommendations = useMemo(() => {
+
+
+    return generateRecommendations(
+
+      method
+
+    );
+
+
+  }, [method]);
+
+
+
 
   return (
 
-    <div className="bg-white rounded-xl shadow border border-slate-200 p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-6">
 
-        AI Method Recommendations
+      <h2 className="text-xl font-bold mb-4">
+
+        AI Recommendation Panel
 
       </h2>
 
-      <div className="space-y-4">
 
-        {recommendations.map((item, index) => (
 
-          <div
+      <div className="space-y-3">
 
-            key={index}
 
-            className={`border rounded-lg p-4 ${priorityColor[item.priority]}`}
+        <div className="bg-slate-50 rounded p-4">
 
-          >
 
-            <div className="flex justify-between items-center mb-2">
+          <h3 className="font-semibold">
 
-              <h3 className="font-bold">
+            Retention Prediction
+
+          </h3>
+
+
+          <p>
+
+            Retention Time: {retention.retentionTime} min
+
+          </p>
+
+
+          <p>
+
+            k': {retention.kPrime}
+
+          </p>
+
+
+        </div>
+
+
+
+
+        <div className="bg-slate-50 rounded p-4">
+
+
+          <h3 className="font-semibold">
+
+            Recommendations
+
+          </h3>
+
+
+
+          {recommendations.map((item, index) => (
+
+
+            <div key={index} className="mt-2">
+
+
+              <p className="font-medium">
 
                 {item.title}
 
-              </h3>
+              </p>
 
-              <span className="text-xs font-semibold">
 
-                {item.priority}
+              <p className="text-sm text-slate-600">
 
-              </span>
+                {item.message}
+
+              </p>
+
 
             </div>
 
-            <p className="text-sm">
 
-              {item.reason}
+          ))}
 
-            </p>
 
-          </div>
+        </div>
 
-        ))}
 
       </div>
+
 
     </div>
 

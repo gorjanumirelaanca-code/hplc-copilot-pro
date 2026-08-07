@@ -1,131 +1,76 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
 
+interface SaveMethodButtonProps {
 
-export default function SaveMethodButton() {
+  ai?: any;
 
-
-  const { data: session } = useSession();
-
-
-  const { molecule } = useLabStore();
-
-
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+}
 
 
 
-  async function saveMethod() {
+export default function SaveMethodButton({
+
+  ai = {}
+
+}: SaveMethodButtonProps) {
 
 
-    if (!session?.user?.email) {
+  const engine = ai?.engine ?? {};
 
-      alert("Please login first");
+  const column = engine.column ?? {};
 
-      return;
+  const mobilePhase = engine.mobilePhase ?? {};
 
-    }
+  const gradient = ai?.gradient ?? {};
 
 
 
-    const ai = runMethodEngineV3(
+  function saveMethod() {
 
-      {
 
-        molecularWeight:
-          Number(molecule.molecularWeight) || 250,
+    const method = {
 
-        logP:
-          Number(molecule.xlogP) || 2,
 
-        pKa: 4.5,
+      column:
 
-        tpsa:
-          Number(molecule.tpsa) || 40,
+        column.column ?? "",
 
-        hBondDonors:
-          Number(molecule.hBondDonors) || 1,
 
-        hBondAcceptors:
-          Number(molecule.hBondAcceptors) || 2
+      buffer:
 
-      },
+        mobilePhase.buffer ?? "",
 
-      {
 
-        organic,
+      organic:
 
-        flow,
+        mobilePhase.organic ?? "",
 
-        temperature,
 
-        pH
+      pH:
 
-      }
+        Number(mobilePhase.pH ?? 0),
+
+
+      gradient:
+
+        `${gradient.startB ?? 0}% → ${gradient.endB ?? 0}%`
+
+
+    };
+
+
+
+    localStorage.setItem(
+
+      "hplc-method",
+
+      JSON.stringify(method)
 
     );
 
 
-
-    const response = await fetch("/api/methods", {
-
-      method: "POST",
-
-      headers: {
-
-        "Content-Type": "application/json"
-
-      },
-
-      body: JSON.stringify({
-
-        userId: session.user.email,
-
-        name:
-          `${molecule.name || "Unknown"} AI Method`,
-
-        compound:
-          molecule.name || "Unknown",
-
-        column:
-          ai.result.engine.column.column,
-
-        mobilePhase:
-          ai.result.pH.buffer,
-
-        pH:
-          Number(ai.result.pH.pH),
-
-        gradient:
-          `${ai.result.gradient.startB}% → ${ai.result.gradient.endB}%`
-
-      })
-
-    });
-
-
-
-    if(response.ok){
-
-      alert("AI Method saved to database ✅");
-
-    }
-
-    else {
-
-      alert("Save failed");
-
-    }
-
+    alert("Method saved successfully.");
 
   }
 
@@ -137,11 +82,11 @@ export default function SaveMethodButton() {
 
       onClick={saveMethod}
 
-      className="w-full rounded-lg bg-green-600 hover:bg-green-700 text-white py-3 font-semibold"
+      className="rounded-lg bg-blue-600 px-4 py-2 text-white"
 
     >
 
-      💾 Save AI Method To Database
+      Save Method
 
     </button>
 

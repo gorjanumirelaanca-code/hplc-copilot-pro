@@ -1,109 +1,107 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
 
-export default function AIOptimizer() {
+interface AIOptimizerProps {
 
-  const { molecule } = useLabStore();
+  ai?: any;
 
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+}
 
 
-  const ai = runMethodEngineV3(
 
-    {
-      molecularWeight: Number(molecule.molecularWeight) || 250,
-      logP: Number(molecule.xlogP) || 2,
-      pKa: 4.5,
-      tpsa: Number(molecule.tpsa) || 40,
-      hBondDonors: Number(molecule.hBondDonors) || 1,
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-    },
+export default function AIOptimizer({
 
-    {
-      organic,
-      flow,
-      temperature,
-      pH
-    }
+  ai = {}
 
-  );
+}: AIOptimizerProps) {
 
 
-  const suggestions = [
+  const engine = ai?.engine ?? {};
+
+  const prediction = engine.prediction ?? {};
+
+  const system = ai?.system ?? {};
+
+
+
+  const recommendations = [
 
     {
+
       title: "Retention",
+
       value:
-        ai.result.engine.prediction.capacityFactor < 2
+
+        prediction.capacityFactor < 2
+
           ? "Decrease organic phase to increase retention."
+
           : "Retention is acceptable."
+
     },
 
     {
+
       title: "Resolution",
+
       value:
-        ai.result.system.resolution < 2
-          ? "Change pH, column chemistry, or gradient slope."
-          : "Resolution target achieved."
+
+        prediction.resolution < 1.5
+
+          ? "Improve selectivity or optimize gradient."
+
+          : "Resolution is acceptable."
+
     },
 
     {
-      title: "Peak Shape",
-      value:
-        ai.result.system.tailingFactor > 2
-          ? "Investigate secondary interactions and sample loading."
-          : "Peak symmetry acceptable."
-    },
 
-    {
       title: "Pressure",
+
       value:
-        ai.result.system.pressure > 400
+
+        system.pressure > 400
+
           ? "Reduce flow or inspect system restriction."
+
           : "Pressure within expected range."
+
     }
 
   ];
 
 
+
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        AI Optimization Engine
+      <h2 className="text-xl font-bold mb-4">
+
+        AI Optimizer
 
       </h2>
 
 
-      <div className="space-y-4">
 
-        {suggestions.map((item,index)=>(
+      <div className="text-3xl font-bold text-blue-600 mb-4">
 
-          <div
+        {engine.score ?? 0}/100
 
-            key={index}
+      </div>
 
-            className="rounded-lg border bg-blue-50 p-4"
 
-          >
 
-            <h3 className="font-bold">
+      <div className="space-y-3">
 
-              {item.title}
+        {recommendations.map((item,index)=>(
 
-            </h3>
+          <div key={index} className="border rounded p-3">
 
-            <p className="mt-2">
+            <strong>{item.title}</strong>
+
+            <p className="text-sm">
 
               {item.value}
 

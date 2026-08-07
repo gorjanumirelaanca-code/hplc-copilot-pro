@@ -1,71 +1,97 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { recommendGradient } from "@/lib/ai";
 
-export default function GradientRecommendation() {
+interface GradientRecommendationProps {
 
-  const { molecule } = useLabStore();
+  gradient?: any;
 
-  const gradient = recommendGradient({
+}
 
-    molecularWeight: Number(molecule.molecularWeight) || 250,
 
-    logP: Number(molecule.xlogP) || 2,
 
-    pKa: 4.5,
+export default function GradientRecommendation({
 
-    tpsa: Number(molecule.tpsa) || 40,
+  gradient = {}
 
-    hBondDonors: Number(molecule.hBondDonors) || 1,
+}: GradientRecommendationProps) {
 
-    hBondAcceptors: Number(molecule.hBondAcceptors) || 2
 
-  });
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        AI Gradient Recommendation
+      <h2 className="text-xl font-bold mb-4">
+
+        Gradient Recommendation
 
       </h2>
 
-      <div className="space-y-3">
 
-        <div className="flex justify-between">
-          <span>Initial %B</span>
-          <strong>{gradient.startB}%</strong>
-        </div>
 
-        <div className="flex justify-between">
-          <span>Final %B</span>
-          <strong>{gradient.endB}%</strong>
-        </div>
+      <div className="space-y-2 text-sm">
 
-        <div className="flex justify-between">
-          <span>Gradient Time</span>
-          <strong>{gradient.time} min</strong>
-        </div>
 
-        <div className="flex justify-between">
-          <span>Curve</span>
-          <strong>{gradient.curve}</strong>
-        </div>
+        <p>
 
-        <div className="flex justify-between">
-          <span>Re-equilibration</span>
-          <strong>{gradient.reequilibration} min</strong>
-        </div>
+          Organic Start:{" "}
 
-        <div className="flex justify-between">
-          <span>Equilibration</span>
-          <strong>{gradient.equilibration} min</strong>
-        </div>
+          {gradient.organicStart ?? "-"}
+
+          %
+
+        </p>
+
+
+
+        <p>
+
+          Organic End:{" "}
+
+          {gradient.organicEnd ?? "-"}
+
+          %
+
+        </p>
+
+
+
+        <p>
+
+          Flow Rate:{" "}
+
+          {gradient.flow ?? "-"}
+
+          {" "}mL/min
+
+        </p>
+
+
+
+        <p>
+
+          Temperature:{" "}
+
+          {gradient.temperature ?? "-"}
+
+          °C
+
+        </p>
+
+
+
+        <p className="text-slate-600 mt-3">
+
+          {gradient.recommendation ??
+
+            "Gradient optimization recommendation will appear here."}
+
+        </p>
+
 
       </div>
+
 
     </div>
 

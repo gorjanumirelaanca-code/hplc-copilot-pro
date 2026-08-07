@@ -1,116 +1,413 @@
 "use client";
 
 import { useState } from "react";
-import { useLabStore } from "@/lib/store/useLabStore";
+
+
+interface Molecule {
+
+  name?: string;
+
+  molecularWeight?: number;
+
+  logP?: number;
+
+  pKa?: number;
+
+  tpsa?: number;
+
+  hBondDonors?: number;
+
+  hBondAcceptors?: number;
+
+  smiles?: string;
+
+  iupacName?: string;
+
+  formula?: string;
+
+}
+
+
 
 export default function MoleculeSearch() {
+
 
   const [query, setQuery] = useState("");
 
   const [loading, setLoading] = useState(false);
 
-  const { setMolecule } = useLabStore();
+  const [molecule, setMolecule] = useState<Molecule | null>(null);
 
 
-  async function searchCompound() {
+
+  async function searchMolecule() {
+
 
     if (!query.trim()) return;
 
+
     setLoading(true);
+
 
     try {
 
-      const response = await fetch(
 
-        `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${query}/property/MolecularWeight,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount,CanonicalSMILES,IUPACName,ExactMass,RotatableBondCount/JSON`
+      const response = await fetch("/api/pubchem", {
 
-      );
+        method: "POST",
+
+        headers: {
+
+          "Content-Type": "application/json",
+
+        },
+
+        body: JSON.stringify({
+
+          query,
+
+        }),
+
+      });
+
 
 
       const data = await response.json();
 
 
-      const p = data.PropertyTable.Properties[0];
+      console.log("PUBCHEM RESPONSE:", data);
 
 
-      setMolecule({
 
-        name: query,
-
-        molecularWeight: Number(p.MolecularWeight),
-
-        xlogP: Number(p.XLogP),
-
-        tpsa: Number(p.TPSA),
-
-        hBondDonors: Number(p.HBondDonorCount),
-
-        hBondAcceptors: Number(p.HBondAcceptorCount),
-
-        smiles: p.CanonicalSMILES,
-
-        iupacName: p.IUPACName,
-
-        exactMass: Number(p.ExactMass),
-
-        rotatableBonds: Number(p.RotatableBondCount),
-
-        cid: p.CID
-
-      });
+      const p = data?.properties ?? data;
 
 
-    } catch (error) {
 
-      console.error(error);
+      const result: Molecule = {
+
+
+        name:
+
+          p.Title ??
+
+          p.title ??
+
+          p.name ??
+
+          query,
+
+
+
+        molecularWeight:
+
+          Number(
+
+            p.MolecularWeight ??
+
+            p.molecularWeight ??
+
+            p.molecular_weight ??
+
+            0
+
+          ),
+
+
+
+        logP:
+
+          Number(
+
+            p.XLogP ??
+
+            p.xlogp ??
+
+            p.logP ??
+
+            p.logp ??
+
+            0
+
+          ),
+
+
+
+        pKa:
+
+          Number(
+
+            p.PKa ??
+
+            p.pKa ??
+
+            0
+
+          ),
+
+
+
+        tpsa:
+
+          Number(
+
+            p.TPSA ??
+
+            p.tpsa ??
+
+            0
+
+          ),
+
+
+
+        hBondDonors:
+
+          Number(
+
+            p.HBondDonorCount ??
+
+            p.hBondDonors ??
+
+            p.hBondDonorCount ??
+
+            0
+
+          ),
+
+
+
+        hBondAcceptors:
+
+          Number(
+
+            p.HBondAcceptorCount ??
+
+            p.hBondAcceptors ??
+
+            p.hBondAcceptorCount ??
+
+            0
+
+          ),
+
+
+
+        smiles:
+
+          p.CanonicalSMILES ??
+
+          p.canonicalSMILES ??
+
+          p.smiles ??
+
+          "",
+
+
+
+        iupacName:
+
+          p.IUPACName ??
+
+          p.iupacName ??
+
+          "",
+
+
+
+        formula:
+
+          p.MolecularFormula ??
+
+          p.molecularFormula ??
+
+          p.formula ??
+
+          "",
+
+
+      };
+
+
+
+      setMolecule(result);
+
+
+
+    } catch(error) {
+
+
+      console.error(
+
+        "PubChem search error",
+
+        error
+
+      );
+
+
+    } finally {
+
+
+      setLoading(false);
+
 
     }
 
 
-    setLoading(false);
-
   }
+
+
 
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        Compound Search
+      <h2 className="text-xl font-bold mb-4">
+
+        Molecule Search
 
       </h2>
 
 
+
       <div className="flex gap-3">
+
 
         <input
 
+
           className="flex-1 border rounded-lg p-3"
 
-          placeholder="Enter compound name (e.g. Caffeine)"
 
           value={query}
 
-          onChange={(e)=>setQuery(e.target.value)}
+
+          placeholder="Enter compound name"
+
+
+          onChange={(e) => setQuery(e.target.value)}
+
 
         />
 
 
+
         <button
 
-          onClick={searchCompound}
 
-          className="rounded-lg bg-blue-600 text-white px-6"
+          onClick={searchMolecule}
+
+
+          className="bg-blue-600 text-white px-6 rounded-lg"
+
 
         >
 
-          {loading ? "Searching..." : "Search PubChem"}
+          {loading ? "Searching..." : "Search"}
+
 
         </button>
 
+
       </div>
+
+
+
+
+      {molecule && (
+
+
+        <div className="mt-6 rounded-lg bg-slate-50 p-5">
+
+
+          <h3 className="font-bold text-lg">
+
+            {molecule.name}
+
+          </h3>
+
+
+
+          <p>
+
+            Formula: {molecule.formula || "-"}
+
+          </p>
+
+
+
+          <p>
+
+            Molecular Weight: {molecule.molecularWeight}
+
+          </p>
+
+
+
+          <p>
+
+            logP: {molecule.logP}
+
+          </p>
+
+
+
+          <p>
+
+            TPSA: {molecule.tpsa}
+
+          </p>
+
+
+
+          <p>
+
+            H Bond Donors: {molecule.hBondDonors}
+
+          </p>
+
+
+
+          <p>
+
+            H Bond Acceptors: {molecule.hBondAcceptors}
+
+          </p>
+
+
+
+          {molecule.smiles && (
+
+            <p className="mt-3 text-xs break-all">
+
+              SMILES: {molecule.smiles}
+
+            </p>
+
+          )}
+
+
+
+          {molecule.iupacName && (
+
+            <p className="mt-2 text-xs">
+
+              IUPAC: {molecule.iupacName}
+
+            </p>
+
+          )}
+
+
+
+        </div>
+
+
+      )}
+
+
 
     </div>
 

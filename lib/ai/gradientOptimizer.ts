@@ -1,101 +1,131 @@
-import { Molecule } from "./retentionPredictor";
+export interface GradientMethod {
 
-export interface GradientProgram {
+  organic?: number;
 
-  startB: number;
+  flow?: number;
 
-  endB: number;
+  temperature?: number;
 
-  time: number;
+  time?: number;
 
-  reequilibration: number;
-
-  curve: string;
-
-  equilibration: number;
+  pH?: number;
 
 }
 
-export function recommendGradient(
 
-  molecule: Molecule
 
-): GradientProgram {
+export interface GradientResult {
 
-  if (molecule.logP < 0.5) {
+  gradient: string;
 
-    return {
+  organicStart: number;
 
-      startB: 5,
+  organicEnd: number;
 
-      endB: 45,
+  flow: number;
 
-      time: 12,
+  temperature: number;
 
-      reequilibration: 3,
+  recommendation: string;
 
-      curve: "Linear",
+}
 
-      equilibration: 5
 
-    };
 
-  }
+export function optimizeGradient(
 
-  if (molecule.logP < 2) {
+  input: GradientMethod = {},
 
-    return {
+  conditions?: GradientMethod
 
-      startB: 20,
+): GradientResult {
 
-      endB: 90,
 
-      time: 10,
+  const method = {
 
-      reequilibration: 3,
+    ...input,
 
-      curve: "Linear",
+    ...(conditions || {})
 
-      equilibration: 5
+  };
 
-    };
 
-  }
 
-  if (molecule.logP < 4) {
+  const organic = method.organic ?? 50;
 
-    return {
+  const flow = method.flow ?? 1.0;
 
-      startB: 30,
+  const temperature = method.temperature ?? 30;
 
-      endB: 95,
 
-      time: 15,
 
-      reequilibration: 4,
+  const organicStart = Math.max(
 
-      curve: "Concave",
+    5,
 
-      equilibration: 6
+    organic - 20
 
-    };
+  );
 
-  }
+
+
+  const organicEnd = Math.min(
+
+    95,
+
+    organic + 20
+
+  );
+
+
 
   return {
 
-    startB: 40,
 
-    endB: 98,
+    gradient:
 
-    time: 20,
+      `${organicStart}% to ${organicEnd}% organic over 20 min`,
 
-    reequilibration: 5,
 
-    curve: "Convex",
+    organicStart,
 
-    equilibration: 8
+
+    organicEnd,
+
+
+    flow,
+
+
+    temperature,
+
+
+    recommendation:
+
+      "Gradient optimized to improve retention and resolution."
 
   };
+
+
+}
+
+
+
+export function generateGradient(
+
+  input: GradientMethod = {},
+
+  conditions?: GradientMethod
+
+): GradientResult {
+
+
+  return optimizeGradient(
+
+    input,
+
+    conditions
+
+  );
+
 
 }

@@ -1,107 +1,82 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { recommendMethod } from "@/lib/ai/methodEngine";
 
+
 export async function POST(
+
   request: NextRequest
+
 ) {
+
 
   try {
 
+
     const body = await request.json();
 
-    const recommendation =
-      recommendMethod(body);
+
+    const recommendation = recommendMethod(body);
+
+
 
     return NextResponse.json({
 
-      compound:
-        body.compound,
+      success:true,
 
-      identity: {
 
-        molecularFormula:
-          body.molecularFormula,
+      method:{
 
-        molecularWeight:
-          body.molecularWeight,
 
-        pubchemCID:
-          body.cid
+        prediction:
 
-      },
+          recommendation.prediction,
 
-      chromatography: {
+
+        score:
+
+          recommendation.score,
+
 
         column:
+
           recommendation.column,
 
-        mode:
-          recommendation.mode,
 
-        mobilePhaseA:
-          recommendation.mobilePhaseA,
+        mobilePhase:
 
-        mobilePhaseB:
-          recommendation.mobilePhaseB,
+          recommendation.mobilePhase
 
-        pH:
-          recommendation.pH,
-
-        organic:
-          recommendation.organicPercent,
-
-        flowRate:
-          recommendation.flowRate,
-
-        temperature:
-          recommendation.temperature,
-
-        detection:
-          recommendation.detection,
-
-        estimatedRetention:
-          recommendation.estimatedRetention
-
-      },
-
-      confidence:
-        recommendation.confidence,
-
-      rationale:
-        recommendation.rationale,
-
-      startingConditions: {
-
-        injectionVolume:
-          "10 µL",
-
-        runTime:
-          "10 min"
 
       }
 
+
     });
 
-  }
 
-  catch(error){
 
-    console.error(error);
+  } catch(error) {
+
 
     return NextResponse.json(
 
       {
-        error:
-          "Unable to generate AI method."
+
+        success:false,
+
+        error:"Method recommendation failed"
+
       },
 
       {
+
         status:500
+
       }
 
     );
 
+
   }
+
 
 }

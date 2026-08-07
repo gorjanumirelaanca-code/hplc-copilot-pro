@@ -1,132 +1,213 @@
 export interface Molecule {
 
-  molecularWeight: number;
+  name?: string;
 
-  logP: number;
+  molecularWeight?: number;
 
-  pKa: number;
+  logP?: number;
 
-  tpsa: number;
+  pKa?: number;
 
-  hBondDonors: number;
+  tpsa?: number;
 
-  hBondAcceptors: number;
+  hBondDonors?: number;
+
+  hBondAcceptors?: number;
+
+  smiles?: string;
+
+  iupacName?: string;
+
+  formula?: string;
 
 }
+
+
+
+export interface CompoundProperties extends Molecule {}
+
+
 
 export interface Method {
 
-  organic: number;
+  organic?: number;
 
-  flow: number;
+  flow?: number;
 
-  temperature: number;
+  temperature?: number;
 
-  pH: number;
+  pH?: number;
 
 }
+
+
+
+export interface MethodConditions extends Method {}
+
+
 
 export interface RetentionPrediction {
 
-  retentionScore: number;
-
   retentionTime: number;
+
+  kPrime: number;
 
   k: number;
 
-  ionizedFraction: number;
+  capacityFactor: number;
+
+  peakWidth: number;
+
+  tailing: number;
+
+  resolution: number;
+
+  pressure: number;
+
+  selectivity: number;
 
 }
 
+
+
 export function predictRetention(
 
-  molecule: Molecule,
+  molecule: Molecule = {},
 
-  method: Method
+  method: Method = {}
 
 ): RetentionPrediction {
 
-  // Organic solvent strength (0–1)
-  const solventStrength =
-    Math.max(0.05, (100 - method.organic) / 100);
 
-  // Temperature correction
-  const temperatureCorrection =
-    1 - (method.temperature - 30) * 0.003;
+  const logP = molecule.logP ?? 2;
 
-  // Henderson–Hasselbalch approximation
-  const ionizedFraction =
-    1 /
-    (
-      1 +
-      Math.pow(
-        10,
-        method.pH - molecule.pKa
-      )
-    );
+  const organic = method.organic ?? 50;
 
-  // Hydrophobic contribution
-  const hydrophobic =
-    molecule.logP *
-    solventStrength;
+  const flow = method.flow ?? 1.0;
 
-  // Polar penalty
-  const polarPenalty =
-    molecule.tpsa * 0.010;
 
-  // Hydrogen bonding contribution
-  const hydrogenBonding =
-    (
-      molecule.hBondDonors +
-      molecule.hBondAcceptors
-    ) * 0.08;
-
-  // Molecular size contribution
-  const sizeContribution =
-    molecule.molecularWeight / 300;
-
-  const score =
-
-    hydrophobic *
-
-    ionizedFraction *
-
-    temperatureCorrection +
-
-    sizeContribution -
-
-    polarPenalty -
-
-    hydrogenBonding;
-
-  const k = Math.max(
-
-    0.5,
-
-    score * 2.2
-
-  );
 
   const retentionTime =
 
-    1 +
+    2 +
 
-    k / Math.max(method.flow, 0.1);
+    logP * 1.2 -
+
+    organic / 100;
+
+
+
+  const capacityFactor =
+
+    Number((retentionTime / 0.5).toFixed(2));
+
+
+
+  const kPrime = capacityFactor;
+
+
+
+  const peakWidth =
+
+    Number((retentionTime * 0.08).toFixed(2));
+
+
+
+  const tailing =
+
+    Number(
+
+      (1.1 + ((molecule.molecularWeight ?? 250) / 5000)).toFixed(2)
+
+    );
+
+
+
+  const resolution =
+
+    Number(
+
+      (1.8 + ((molecule.tpsa ?? 40) / 100)).toFixed(2)
+
+    );
+
+
+
+  const pressure =
+
+    Number(
+
+      (150 + flow * 80).toFixed(0)
+
+    );
+
+
+
+  const selectivity =
+
+    Number(
+
+      (1 + Math.abs(logP) / 10).toFixed(2)
+
+    );
+
+
 
   return {
 
-    retentionScore:
-      Number(score.toFixed(2)),
 
     retentionTime:
+
       Number(retentionTime.toFixed(2)),
 
-    k:
-      Number(k.toFixed(2)),
 
-    ionizedFraction:
-      Number(ionizedFraction.toFixed(3))
+    kPrime,
+
+
+    k:
+
+      kPrime,
+
+
+    capacityFactor,
+
+
+    peakWidth,
+
+
+    tailing,
+
+
+    resolution,
+
+
+    pressure,
+
+
+    selectivity
+
 
   };
+
+}
+
+
+
+export function calculateRetention(
+
+  molecule: Molecule = {},
+
+  method: Method = {}
+
+): RetentionPrediction {
+
+
+  return predictRetention(
+
+    molecule,
+
+    method
+
+  );
 
 }

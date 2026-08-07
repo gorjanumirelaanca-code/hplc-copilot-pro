@@ -1,75 +1,75 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
 
-export default function MethodWarnings() {
+interface MethodWarningsProps {
 
-  const { molecule } = useLabStore();
+  ai?: any;
 
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+}
 
 
-  const ai = runMethodEngineV3(
 
-    {
-      molecularWeight: Number(molecule.molecularWeight) || 250,
-      logP: Number(molecule.xlogP) || 2,
-      pKa: 4.5,
-      tpsa: Number(molecule.tpsa) || 40,
-      hBondDonors: Number(molecule.hBondDonors) || 1,
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-    },
+export default function MethodWarnings({
 
-    {
-      organic,
-      flow,
-      temperature,
-      pH
-    }
+  ai = {}
 
-  );
+}: MethodWarningsProps) {
 
 
-  const warnings = ai.result.system.comments;
+  const system = ai?.system ?? {};
+
+  const warnings =
+
+    system.comments ??
+
+    system.warnings ??
+
+    [];
+
 
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        AI Method Warnings
+      <h2 className="text-xl font-bold mb-4">
+
+        Method Warnings
 
       </h2>
 
 
-      <div className="space-y-3">
 
-        {warnings.map((warning, index) => (
+      {warnings.length === 0 ? (
 
-          <div
+        <p className="text-green-600">
 
-            key={index}
+          No warnings detected.
 
-            className="rounded-lg bg-amber-50 border border-amber-200 p-4"
+        </p>
 
-          >
+      ) : (
 
-            ⚠️ {warning}
+        <ul className="list-disc pl-5 space-y-2">
 
-          </div>
+          {warnings.map(
 
-        ))}
+            (warning: string, index: number) => (
 
-      </div>
+              <li key={index}>
+
+                {warning}
+
+              </li>
+
+            )
+
+          )}
+
+        </ul>
+
+      )}
 
 
     </div>

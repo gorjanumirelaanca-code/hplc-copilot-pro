@@ -1,33 +1,114 @@
-export function runMethodEngine(input:any) {
+export interface MethodEngineResult {
+
+  prediction: {
+
+    retentionTime: number;
+
+    resolution: number;
+
+    tailingFactor: number;
+
+    capacityFactor: number;
+
+    peakWidth: number;
+
+    selectivity: number;
+
+  };
 
 
-  const {
+  score: number;
 
-    molecularWeight = 250,
 
-    logP = 2,
+  column: {
 
-    pKa = 4.5,
+    column: string;
 
-    tpsa = 40
+    particle: string;
 
-  } = input;
+    dimensions: string;
+
+  };
+
+
+  mobilePhase: {
+
+    organic: string;
+
+    buffer: string;
+
+    pH: number;
+
+  };
+
+}
+
+
+
+export function runMethodEngine(
+
+  molecule: any = {},
+
+  method: any = {}
+
+): MethodEngineResult {
+
+
+  const logP = molecule.logP ?? 2;
+
+  const tpsa = molecule.tpsa ?? 40;
+
+  const molecularWeight = molecule.molecularWeight ?? 250;
+
+  const organic = method.organic ?? 50;
+
+
+
+  const retentionTime =
+
+    2 +
+
+    logP * 1.2 -
+
+    organic / 100;
 
 
 
   const prediction = {
 
+
     retentionTime:
 
-      Number((2 + logP * 1.2).toFixed(2)),
+      Number(retentionTime.toFixed(2)),
+
 
     resolution:
 
       Number((1.8 + tpsa / 100).toFixed(2)),
 
+
     tailingFactor:
 
-      Number((1.1 + molecularWeight / 2000).toFixed(2))
+      Number(
+
+        (1.1 + molecularWeight / 5000).toFixed(2)
+
+      ),
+
+
+    capacityFactor:
+
+      Number((retentionTime / 0.5).toFixed(2)),
+
+
+    peakWidth:
+
+      Number((retentionTime * 0.08).toFixed(2)),
+
+
+    selectivity:
+
+      Number((1 + Math.abs(logP) / 10).toFixed(2))
 
   };
 
@@ -41,67 +122,13 @@ export function runMethodEngine(input:any) {
 
       70 +
 
-      logP * 5 +
+      prediction.resolution * 5 -
 
-      tpsa / 10
+      prediction.tailingFactor * 5
 
     )
 
   );
-
-
-
-  const column = {
-
-    column:
-
-      logP > 3
-
-      ? "C18 Reversed Phase"
-
-      : "Phenyl-Hexyl Column",
-
-    particle:
-
-      "5 µm",
-
-    dimensions:
-
-      "150 × 4.6 mm"
-
-  };
-
-
-
-  const mobilePhase = {
-
-    organic:
-
-      logP > 3
-
-      ? "Acetonitrile"
-
-      : "Methanol",
-
-
-    buffer:
-
-      pKa < 5
-
-      ? "Phosphate Buffer"
-
-      : "Ammonium Formate",
-
-
-    pH:
-
-      pKa < 5
-
-      ? 3.0
-
-      : 6.5
-
-  };
 
 
 
@@ -114,18 +141,58 @@ export function runMethodEngine(input:any) {
     score,
 
 
-    column,
+    column: {
 
 
-    mobilePhase
+      column:
+
+        "C18 Reversed Phase",
+
+
+      particle:
+
+        "5 µm",
+
+
+      dimensions:
+
+        "150 × 4.6 mm"
+
+    },
+
+
+    mobilePhase: {
+
+
+      organic:
+
+        organic > 60
+
+        ? "Acetonitrile"
+
+        : "Methanol",
+
+
+      buffer:
+
+        "Phosphate Buffer",
+
+
+      pH:
+
+        molecule.pKa < 5
+
+        ? 3
+
+        : 6.5
+
+    }
 
 
   };
 
-
 }
 
 
-// Compatibility export used by API routes
 
 export const recommendMethod = runMethodEngine;

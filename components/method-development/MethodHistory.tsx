@@ -1,71 +1,89 @@
-MethodHistory.tsx"use client";
+"use client";
+
 
 export default function MethodHistory() {
+
 
   const history = [
 
     {
-      date: "Today",
-      compound: "Current Compound",
-      status: "Generated"
+      version: "v1.0",
+      date: "Initial method development",
+      status: "Created"
     },
 
     {
-      date: "Yesterday",
-      compound: "Ibuprofen",
-      status: "Optimized"
+      version: "v1.1",
+      date: "Optimization performed",
+      status: "Improved resolution"
     },
 
     {
-      date: "Last Week",
-      compound: "Paracetamol",
-      status: "Validated"
+      version: "v1.2",
+      date: "Final method review",
+      status: "Ready for validation"
     }
 
   ];
 
+
+
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        Recent Methods
+      <h2 className="text-xl font-bold mb-5">
+
+        Method History
 
       </h2>
 
-      <div className="space-y-3">
 
-        {history.map((item, index) => (
+
+      <div className="space-y-4">
+
+
+        {history.map((item,index)=>(
+
 
           <div
+
             key={index}
-            className="rounded-lg border p-4 flex justify-between items-center"
+
+            className="border-l-4 border-blue-600 pl-4"
+
           >
 
-            <div>
+            <p className="font-bold">
 
-              <div className="font-semibold">
-                {item.compound}
-              </div>
+              {item.version}
 
-              <div className="text-sm text-slate-500">
-                {item.date}
-              </div>
+            </p>
 
-            </div>
 
-            <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">
+            <p className="text-sm text-slate-600">
+
+              {item.date}
+
+            </p>
+
+
+            <p className="text-sm text-blue-600">
 
               {item.status}
 
-            </span>
+            </p>
+
 
           </div>
 
+
         ))}
 
+
       </div>
+
 
     </div>
 

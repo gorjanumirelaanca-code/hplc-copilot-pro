@@ -1,118 +1,48 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
 
-export default function AIConfidence() {
+interface AIConfidenceProps {
 
-  const { molecule } = useLabStore();
+  confidence?: number;
 
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+}
 
 
-  const ai = runMethodEngineV3(
 
-    {
-      molecularWeight: Number(molecule.molecularWeight) || 250,
-      logP: Number(molecule.xlogP) || 2,
-      pKa: 4.5,
-      tpsa: Number(molecule.tpsa) || 40,
-      hBondDonors: Number(molecule.hBondDonors) || 1,
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-    },
+export default function AIConfidence({
 
-    {
-      organic,
-      flow,
-      temperature,
-      pH
-    }
+  confidence = 0
 
-  );
+}: AIConfidenceProps) {
+
 
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-5">
 
-      <h2 className="text-2xl font-bold mb-5">
+
+      <h3 className="font-bold text-lg mb-3">
 
         AI Confidence
 
-      </h2>
+      </h3>
 
 
-      <div className="text-6xl font-bold text-blue-600">
 
-        {ai.confidence}%
+      <div className="text-3xl font-bold text-blue-600">
 
-      </div>
-
-
-      <div className="mt-5 h-4 rounded-full bg-slate-200">
-
-        <div
-
-          className="h-4 rounded-full bg-blue-600"
-
-          style={{
-            width: `${ai.confidence}%`
-          }}
-
-        />
+        {confidence}%
 
       </div>
 
 
-      <div className="mt-6 space-y-3">
 
+      <p className="text-sm text-gray-600 mt-2">
 
-        <div className="flex justify-between">
+        Confidence level of the AI method recommendation.
 
-          <span>Method Score</span>
-
-          <strong>
-
-            {ai.result.engine.score}/100
-
-          </strong>
-
-        </div>
-
-
-        <div className="flex justify-between">
-
-          <span>System Suitability</span>
-
-          <strong>
-
-            {ai.result.system.pass ? "PASS" : "CHECK"}
-
-          </strong>
-
-        </div>
-
-
-        <div className="flex justify-between">
-
-          <span>Lab Status</span>
-
-          <strong>
-
-            {ai.laboratoryReady ? "READY" : "OPTIMIZE"}
-
-          </strong>
-
-        </div>
-
-
-      </div>
+      </p>
 
 
     </div>

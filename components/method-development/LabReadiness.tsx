@@ -1,139 +1,71 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
-import { useMethodStore } from "@/lib/store/useMethodStore";
-import { runMethodEngineV3 } from "@/lib/ai";
 
-export default function LabReadiness() {
-
-  const { molecule } = useLabStore();
-
-  const {
-    organic,
-    flow,
-    temperature,
-    pH
-  } = useMethodStore();
+export default function LabReadiness({ ai }: any) {
 
 
-  const ai = runMethodEngineV3(
+  const engine = ai?.engine ?? {};
 
-    {
-      molecularWeight: Number(molecule.molecularWeight) || 250,
-      logP: Number(molecule.xlogP) || 2,
-      pKa: 4.5,
-      tpsa: Number(molecule.tpsa) || 40,
-      hBondDonors: Number(molecule.hBondDonors) || 1,
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-    },
+  const mobilePhase = engine.mobilePhase ?? {};
 
-    {
-      organic,
-      flow,
-      temperature,
-      pH
-    }
+  const system = ai?.system ?? {};
 
-  );
 
 
   const checks = [
 
     {
-      name: "Compound characterization",
-      pass: !!molecule.name
-    },
 
-    {
       name: "Column recommendation",
-      pass: !!ai.result.engine.column.column
+
+      pass: !!engine.column?.column
+
     },
 
-    {
-      name: "Mobile phase recommendation",
-      pass: !!ai.result.pH.buffer
-    },
 
     {
+
+      name: "Mobile phase",
+
+      pass: !!mobilePhase.organic
+
+    },
+
+
+    {
+
       name: "System suitability",
-      pass: ai.result.system.pass
-    },
 
-    {
-      name: "AI confidence",
-      pass: ai.confidence >= 80
+      pass: !!system.pass
+
     }
 
   ];
 
 
-  const completed =
-    checks.filter(item => item.pass).length;
-
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
-      <h2 className="text-2xl font-bold mb-5">
 
-        Laboratory Readiness
+      <h2 className="font-bold text-xl mb-4">
+
+        Lab Readiness
 
       </h2>
 
 
-      <div className="text-5xl font-bold text-blue-600">
 
-        {completed}/{checks.length}
+      {checks.map((c)=>(
 
-      </div>
+        <div key={c.name} className="mb-2">
 
+          {c.pass ? "✅" : "❌"} {c.name}
 
-      <p className="mt-2 text-slate-600">
+        </div>
 
-        Method development readiness checks completed
-
-      </p>
-
-
-      <div className="mt-6 space-y-3">
-
-        {checks.map((item,index)=>(
-
-          <div
-
-            key={index}
-
-            className="flex justify-between rounded-lg border p-4"
-
-          >
-
-            <span>
-
-              {item.name}
-
-            </span>
-
-
-            <strong className={item.pass ? "text-green-600" : "text-red-600"}>
-
-              {item.pass ? "PASS" : "CHECK"}
-
-            </strong>
-
-
-          </div>
-
-        ))}
-
-      </div>
-
-
-      <div className="mt-6 rounded-lg bg-blue-50 p-4">
-
-        AI Confidence: {ai.confidence}%
-
-      </div>
+      ))}
 
 
     </div>

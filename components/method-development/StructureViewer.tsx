@@ -1,77 +1,150 @@
 "use client";
 
-import { useLabStore } from "@/lib/store/useLabStore";
 
-export default function StructureViewer() {
+interface Molecule {
 
-  const { molecule } = useLabStore();
+  name?: string;
+
+  smiles?: string;
+
+  molecularWeight?: number;
+
+  formula?: string;
+
+  iupacName?: string;
+
+}
 
 
-  const structureUrl = molecule.cid
 
-    ? `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${molecule.cid}/PNG`
+interface StructureViewerProps {
 
-    : "";
+  molecule?: Molecule;
+
+}
+
+
+
+export default function StructureViewer({
+
+  molecule
+
+}: StructureViewerProps) {
 
 
   return (
 
-    <div className="rounded-xl border shadow bg-white p-6">
+    <div className="rounded-xl border bg-white shadow p-6">
 
 
-      <h2 className="text-2xl font-bold mb-5">
+      <h2 className="text-xl font-bold mb-4">
 
-        2D Chemical Structure
+        Molecular Structure Viewer
 
       </h2>
 
 
-      <div className="flex justify-center items-center min-h-[280px]">
+
+      {molecule ? (
 
 
-        {structureUrl ? (
-
-          <img
-
-            src={structureUrl}
-
-            alt="Chemical structure"
-
-            className="max-h-[260px] object-contain"
-
-          />
-
-        ) : (
-
-          <div className="text-slate-500">
-
-            No structure available. Search a compound first.
-
-          </div>
-
-        )}
+        <div className="space-y-3">
 
 
-      </div>
+          <p className="font-semibold">
+
+            {molecule.name || "Unknown compound"}
+
+          </p>
 
 
-      {molecule.smiles && (
 
-        <div className="mt-5 rounded-lg bg-slate-50 p-4">
+          {molecule.formula && (
 
-          <div className="text-sm text-slate-500 mb-2">
+            <p className="text-sm">
 
-            SMILES
+              Formula: {molecule.formula}
 
-          </div>
+            </p>
 
-          <div className="text-sm break-all">
+          )}
 
-            {molecule.smiles}
 
-          </div>
+
+          {molecule.molecularWeight && (
+
+            <p className="text-sm">
+
+              Molecular Weight: {molecule.molecularWeight}
+
+            </p>
+
+          )}
+
+
+
+          {molecule.smiles && (
+
+            <div>
+
+
+              <p className="text-sm font-semibold">
+
+                SMILES
+
+              </p>
+
+
+              <p className="text-xs break-all bg-slate-100 rounded p-3">
+
+                {molecule.smiles}
+
+              </p>
+
+
+            </div>
+
+          )}
+
+
+
+          {molecule.iupacName && (
+
+            <div>
+
+
+              <p className="text-sm font-semibold">
+
+                IUPAC Name
+
+              </p>
+
+
+              <p className="text-xs">
+
+                {molecule.iupacName}
+
+              </p>
+
+
+            </div>
+
+          )}
+
+
 
         </div>
+
+
+      ) : (
+
+
+        <p className="text-slate-500">
+
+          Search for a molecule to display structure information.
+
+        </p>
+
 
       )}
 
