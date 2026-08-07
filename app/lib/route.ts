@@ -1,39 +1,77 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchCompound } from "../../../lib/pubchem";
+import { searchCompound } from "@/lib/pubchem";
+
 
 export async function POST(
+
   request: NextRequest
+
 ) {
+
+
   try {
+
+
     const body = await request.json();
 
-    const result = await searchCompound(body.compound);
 
-    if (!result) {
+    const query = body.query;
+
+
+
+    if (!query) {
+
+
       return NextResponse.json(
+
         {
-          error: "Compound not found",
+
+          error: "Compound name is required"
+
         },
+
         {
-          status: 404,
+
+          status:400
+
         }
+
       );
+
+
     }
+
+
+
+    const result = await searchCompound(query);
+
+
 
     return NextResponse.json(result);
 
-  } catch (error) {
 
-    console.error(error);
+
+  } catch(error) {
+
 
     return NextResponse.json(
+
       {
-        error: "Unable to retrieve PubChem data.",
+
+        error:"Failed to search compound"
+
       },
+
       {
-        status: 500,
+
+        status:500
+
       }
+
     );
 
+
   }
+
+
 }
