@@ -1,13 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useMethodStore } from "@/lib/store/useMethodStore";
 
 
 interface OptimizationCompareProps {
 
-current?: any;
+  current?: any;
 
-optimized?: any;
+  optimized?: any;
 
 }
 
@@ -15,9 +16,9 @@ optimized?: any;
 
 export default function OptimizationCompare({
 
-current = {},
+  current = {},
 
-optimized = {}
+  optimized = {}
 
 }: OptimizationCompareProps) {
 
@@ -29,10 +30,15 @@ const setOrganic = useMethodStore(
 );
 
 
+const [applied, setApplied] = useState(false);
+
+
 
 const applyOptimization = () => {
 
+
   if (optimized.organic) {
+
 
     setOrganic(
 
@@ -40,7 +46,12 @@ const applyOptimization = () => {
 
     );
 
+
+    setApplied(true);
+
+
   }
+
 
 };
 
@@ -52,158 +63,208 @@ return (
 <div className="rounded-xl border bg-white shadow p-6">
 
 
-  <h2 className="text-2xl font-bold mb-5">
+<h2 className="text-2xl font-bold mb-5">
 
-    AI Optimization Compare
+AI Optimization Compare
 
-  </h2>
+</h2>
 
 
 
 
-  <div className="grid md:grid-cols-2 gap-5">
+<div className="grid md:grid-cols-2 gap-5">
 
 
-    <div className="border rounded-lg p-4">
 
+<div className="border rounded-lg p-4">
 
-      <h3 className="font-semibold mb-3">
 
-        Current Method
+<h3 className="font-semibold mb-3">
 
-      </h3>
+Current Method
 
+</h3>
 
 
-      <p>
 
-        Organic:
+<p>
 
-        {" "}
+Organic:
 
-        <strong>
+{" "}
 
-          {current.organic ?? "-"}%
+<strong>
 
-        </strong>
+{current.organic ?? "-"}%
 
-      </p>
+</strong>
 
+</p>
 
 
-      <p>
 
-        Retention:
+<p>
 
-        {" "}
+Retention:
 
-        <strong>
+{" "}
 
-          {current.retentionTime ?? "-"} min
+<strong>
 
-        </strong>
+{current.retentionTime ?? "-"} min
 
-      </p>
+</strong>
 
+</p>
 
 
-      <p>
 
-        Score:
+<p>
 
-        {" "}
+Score:
 
-        <strong>
+{" "}
 
-          {current.score ?? "-"}/100
+<strong>
 
-        </strong>
+{current.score ?? "-"}/100
 
-      </p>
+</strong>
 
+</p>
 
-    </div>
 
 
+</div>
 
 
 
-    <div className="border rounded-lg p-4 bg-blue-50">
 
 
-      <h3 className="font-semibold mb-3">
 
-        AI Optimized Method
+<div className="border rounded-lg p-4 bg-blue-50">
 
-      </h3>
 
+<h3 className="font-semibold mb-3">
 
+AI Optimized Method
 
-      <p>
+</h3>
 
-        Organic:
 
-        {" "}
 
-        <strong>
+<p>
 
-          {optimized.organic ?? "-"}%
+Organic:
 
-        </strong>
+{" "}
 
-      </p>
+<strong>
 
+{optimized.organic ?? "-"}%
 
+</strong>
 
-      <p>
+</p>
 
-        Expected Retention:
 
-        {" "}
 
-        <strong>
+<p>
 
-          {optimized.retentionTime ?? "-"} min
+Expected Retention:
 
-        </strong>
+{" "}
 
-      </p>
+<strong>
 
+{optimized.retentionTime ?? "-"} min
 
+</strong>
 
-      <p>
+</p>
 
-        Expected Score:
 
-        {" "}
 
-        <strong>
+<p>
 
-          {optimized.score ?? "-"}/100
+Expected Score:
 
-        </strong>
+{" "}
 
-      </p>
+<strong>
 
+{optimized.score ?? "-"}/100
 
+</strong>
 
-      <button
+</p>
 
-        onClick={applyOptimization}
 
-        className="mt-5 rounded-lg bg-blue-600 text-white px-4 py-2"
 
-      >
 
-        Apply AI Optimization
+<button
 
-      </button>
+onClick={applyOptimization}
 
+disabled={applied}
 
-    </div>
+className="mt-5 rounded-lg bg-blue-600 text-white px-4 py-2 disabled:bg-green-600"
 
+>
 
-  </div>
+
+{applied
+
+?
+
+"Optimization Applied ✓"
+
+:
+
+"Apply AI Optimization"
+
+}
+
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+{applied && (
+
+<div className="mt-5 rounded-lg bg-green-50 p-4">
+
+
+<strong>
+
+AI Optimization Applied
+
+</strong>
+
+
+<p className="text-sm mt-2">
+
+Organic phase updated to {optimized.organic}%.
+
+Recalculate method performance to view new predictions.
+
+</p>
+
+
+</div>
+
+)}
+
 
 
 </div>
