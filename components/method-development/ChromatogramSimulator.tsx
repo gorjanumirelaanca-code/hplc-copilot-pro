@@ -6,6 +6,31 @@ import { predictRetention } from "@/lib/ai";
 import { simulateChromatogram } from "@/lib/ai/chromatogramSimulator";
 
 
+function gaussian(
+  x: number,
+  center: number,
+  height: number,
+  width: number
+) {
+
+  return (
+
+    height *
+
+    Math.exp(
+
+      -Math.pow(x - center, 2) /
+
+      (2 * Math.pow(width, 2))
+
+    )
+
+  );
+
+}
+
+
+
 export default function ChromatogramSimulator() {
 
 
@@ -28,17 +53,22 @@ export default function ChromatogramSimulator() {
 
     {
 
-      molecularWeight: Number(molecule.molecularWeight) || 250,
+      molecularWeight:
+        Number(molecule.molecularWeight) || 250,
 
-      logP: Number(molecule.xlogP) || 2,
+      logP:
+        Number(molecule.xlogP) || 2,
 
       pKa: 4.5,
 
-      tpsa: Number(molecule.tpsa) || 40,
+      tpsa:
+        Number(molecule.tpsa) || 40,
 
-      hBondDonors: Number(molecule.hBondDonors) || 1,
+      hBondDonors:
+        Number(molecule.hBondDonors) || 1,
 
-      hBondAcceptors: Number(molecule.hBondAcceptors) || 2
+      hBondAcceptors:
+        Number(molecule.hBondAcceptors) || 2
 
     },
 
@@ -80,39 +110,81 @@ export default function ChromatogramSimulator() {
 
 
 
-  const points = chromatogram.peaks.map((peak) => {
+  const runtime = chromatogram.runtime;
+
+
+  const points: string[] = [];
+
+
+
+  for (
+
+    let time = 0;
+
+    time <= runtime;
+
+    time += 0.05
+
+  ) {
+
+
+    let intensity = 2;
+
+
+
+    chromatogram.peaks.forEach((peak) => {
+
+
+      intensity += gaussian(
+
+        time,
+
+        peak.retentionTime,
+
+        peak.intensity,
+
+        peak.width * 3
+
+      );
+
+
+    });
+
+
 
     const x =
-      (peak.retentionTime / chromatogram.runtime) * 500;
 
+      30 +
 
-    const height =
-      peak.intensity * 1.8;
-
-
-    return {
-
-      x,
-
-      y: 220 - height,
-
-      peak
-
-    };
-
-  });
+      (time / runtime) * 470;
 
 
 
-  const path = points
+    const y =
 
-    .map((p, index) =>
+      220 -
 
-      `${index === 0 ? "M" : "L"} ${p.x} ${p.y}`
+      Math.min(intensity, 100) * 1.8;
 
-    )
 
-    .join(" ");
+
+    points.push(
+
+      `${x},${y}`
+
+    );
+
+
+  }
+
+
+
+
+
+  const path =
+
+    "M " + points.join(" L ");
+
 
 
 
@@ -138,16 +210,17 @@ export default function ChromatogramSimulator() {
 
           width="100%"
 
-          height="260"
+          height="280"
 
           viewBox="0 0 520 260"
 
         >
 
 
+
           <line
 
-            x1="20"
+            x1="30"
 
             y1="220"
 
@@ -162,17 +235,18 @@ export default function ChromatogramSimulator() {
 
           <line
 
-            x1="20"
+            x1="30"
 
             y1="20"
 
-            x2="20"
+            x2="30"
 
             y2="220"
 
             stroke="black"
 
           />
+
 
 
 
@@ -184,56 +258,53 @@ export default function ChromatogramSimulator() {
 
             stroke="blue"
 
-            strokeWidth="3"
+            strokeWidth="2"
 
           />
 
 
 
-          {points.map((p,index)=>(
 
+          {chromatogram.peaks.map(
 
-            <g key={index}>
-
-
-              <circle
-
-                cx={p.x}
-
-                cy={p.y}
-
-                r="5"
-
-                fill="blue"
-
-              />
+            (peak,index)=>(
 
 
               <text
 
-                x={p.x - 15}
+                key={index}
 
-                y={p.y - 10}
+                x={
+
+                  30 +
+
+                  (peak.retentionTime / runtime) *
+
+                  470
+
+                }
+
+                y="35"
 
                 fontSize="12"
 
               >
 
-                {p.peak.name}
+                {peak.name}
 
               </text>
 
 
-            </g>
+            )
 
+          )}
 
-          ))}
 
 
 
           <text
 
-            x="230"
+            x="200"
 
             y="250"
 
@@ -279,7 +350,7 @@ export default function ChromatogramSimulator() {
 
           <strong>
 
-            {chromatogram.runtime.toFixed(1)} min
+            {runtime.toFixed(1)} min
 
           </strong>
 
