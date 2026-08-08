@@ -2,6 +2,8 @@
 
 import { useLabStore } from "@/lib/store/useLabStore";
 import { runMethodEngine } from "@/lib/ai/methodEngine";
+import { optimizeMethod } from "@/lib/ai/methodOptimizer";
+
 
 import AIReportHeader from "./AIReportHeader";
 import MoleculeCard from "./MoleculeCard";
@@ -25,12 +27,14 @@ import LabReadiness from "./LabReadiness";
 import MethodWarnings from "./MethodWarnings";
 import AIOptimizer from "./AIOptimizer";
 import AIKnowledgePanel from "./AIKnowledgePanel";
+import AIOptimizationReport from "./AIOptimizationReport";
 
 import MethodChecklist from "./MethodChecklist";
 import MethodDecisionTree from "./MethodDecisionTree";
 
 import ExportPDFCard from "./ExportPDFCard";
 import MethodActions from "./MethodActions";
+
 
 
 export default function MethodDashboard() {
@@ -45,12 +49,36 @@ export default function MethodDashboard() {
     molecule,
 
     {
+
       organic: 50,
+
       flow: 1,
+
       pH: 6.5
+
     }
 
   );
+
+
+
+
+
+  const optimization = optimizeMethod(
+
+    result.prediction,
+
+    {
+
+      organic: 50,
+
+      flow: 1
+
+    }
+
+  );
+
+
 
 
 
@@ -63,6 +91,7 @@ export default function MethodDashboard() {
 
 
       <MoleculeSearch />
+
 
 
 
@@ -85,6 +114,7 @@ export default function MethodDashboard() {
 
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
 
 
         <ColumnRecommendation />
@@ -159,17 +189,13 @@ export default function MethodDashboard() {
 
             system: {
 
-              pass: true
+              pass:true
 
             }
 
           }}
 
         />
-
-
-
-        <MethodWarnings />
 
 
 
@@ -181,7 +207,7 @@ export default function MethodDashboard() {
 
             system: {
 
-              pressure: 250
+              pressure:250
 
             }
 
@@ -191,15 +217,28 @@ export default function MethodDashboard() {
 
 
 
+        <AIOptimizationReport
+
+          optimization={optimization}
+
+        />
+
+
+
         <AIKnowledgePanel
 
           ai={{
 
-            engine: result
+            engine:result
 
           }}
 
         />
+
+
+
+        <MethodWarnings />
+
 
 
       </div>
@@ -227,6 +266,7 @@ export default function MethodDashboard() {
 
 
       <MethodActions />
+
 
 
     </div>
