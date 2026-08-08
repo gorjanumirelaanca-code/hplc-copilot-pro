@@ -33,17 +33,23 @@ import MethodActions from "./MethodActions";
 
 export default function MethodDashboard() {
 
+
   const { molecule } = useLabStore();
 
 
+
   const result = runMethodEngine(
+
     molecule,
+
     {
       organic: 50,
       flow: 1,
       pH: 6.5
     }
+
   );
+
 
 
   return (
@@ -57,15 +63,21 @@ export default function MethodDashboard() {
       <MoleculeSearch />
 
 
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
 
         <MoleculeCard />
 
+
         <StructureViewer molecule={molecule} />
+
 
         <MethodSummary />
 
+
       </div>
+
 
 
 
@@ -82,7 +94,9 @@ export default function MethodDashboard() {
 
 
         <GradientRecommendation
+
           gradient={result.gradient}
+
         />
 
 
@@ -98,7 +112,15 @@ export default function MethodDashboard() {
         <SystemSuitability />
 
 
-        <MethodScore />
+
+        <MethodScore
+
+          score={result.score}
+
+          prediction={result.prediction}
+
+        />
+
 
 
         <AIConfidence />
@@ -120,13 +142,19 @@ export default function MethodDashboard() {
 
 
 
+
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
 
         <MethodChecklist />
 
+
         <MethodDecisionTree />
 
+
       </div>
+
 
 
 
@@ -134,6 +162,7 @@ export default function MethodDashboard() {
 
 
       <MethodActions />
+
 
 
     </div>
