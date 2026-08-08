@@ -23,6 +23,7 @@ export default function ChromatogramSimulator() {
 
 
 
+
   const prediction = predictRetention(
 
     {
@@ -57,6 +58,7 @@ export default function ChromatogramSimulator() {
 
 
 
+
   const chromatogram = simulateChromatogram(
 
     [
@@ -77,6 +79,44 @@ export default function ChromatogramSimulator() {
 
 
 
+
+  const points = chromatogram.peaks.map((peak) => {
+
+    const x =
+      (peak.retentionTime / chromatogram.runtime) * 500;
+
+
+    const height =
+      peak.intensity * 1.8;
+
+
+    return {
+
+      x,
+
+      y: 220 - height,
+
+      peak
+
+    };
+
+  });
+
+
+
+  const path = points
+
+    .map((p, index) =>
+
+      `${index === 0 ? "M" : "L"} ${p.x} ${p.y}`
+
+    )
+
+    .join(" ");
+
+
+
+
   return (
 
     <div className="rounded-xl border shadow bg-white p-6">
@@ -89,53 +129,145 @@ export default function ChromatogramSimulator() {
       </h2>
 
 
-      <div className="relative h-64 border-b border-l bg-slate-50 overflow-hidden">
 
 
-        {chromatogram.peaks.map((peak,index)=>(
+      <div className="border rounded-lg bg-slate-50 p-3">
 
 
-          <div
+        <svg
 
-            key={index}
+          width="100%"
 
-            className="absolute bottom-0"
+          height="260"
 
-            style={{
+          viewBox="0 0 520 260"
 
-              left:`${(peak.retentionTime / chromatogram.runtime) * 90}%`
+        >
 
-            }}
+
+          <line
+
+            x1="20"
+
+            y1="220"
+
+            x2="500"
+
+            y2="220"
+
+            stroke="black"
+
+          />
+
+
+          <line
+
+            x1="20"
+
+            y1="20"
+
+            x2="20"
+
+            y2="220"
+
+            stroke="black"
+
+          />
+
+
+
+          <path
+
+            d={path}
+
+            fill="none"
+
+            stroke="blue"
+
+            strokeWidth="3"
+
+          />
+
+
+
+          {points.map((p,index)=>(
+
+
+            <g key={index}>
+
+
+              <circle
+
+                cx={p.x}
+
+                cy={p.y}
+
+                r="5"
+
+                fill="blue"
+
+              />
+
+
+              <text
+
+                x={p.x - 15}
+
+                y={p.y - 10}
+
+                fontSize="12"
+
+              >
+
+                {p.peak.name}
+
+              </text>
+
+
+            </g>
+
+
+          ))}
+
+
+
+          <text
+
+            x="230"
+
+            y="250"
+
+            fontSize="12"
 
           >
 
-            <div
+            Retention Time (min)
 
-              className="bg-blue-600 w-1"
-
-              style={{
-
-                height:`${peak.intensity * 2}px`
-
-              }}
-
-            />
+          </text>
 
 
-            <span className="text-xs">
 
-              {peak.name}
+          <text
 
-            </span>
+            x="5"
+
+            y="30"
+
+            fontSize="12"
+
+          >
+
+            Intensity
+
+          </text>
 
 
-          </div>
-
-
-        ))}
+        </svg>
 
 
       </div>
+
+
 
 
       <div className="mt-5 space-y-2">
@@ -154,6 +286,7 @@ export default function ChromatogramSimulator() {
         </div>
 
 
+
         <div className="flex justify-between">
 
           <span>Predicted Resolution</span>
@@ -165,6 +298,7 @@ export default function ChromatogramSimulator() {
           </strong>
 
         </div>
+
 
 
         <div className="flex justify-between">
