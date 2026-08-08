@@ -81,7 +81,6 @@ export default function MethodDashboard() {
 
 
 
-
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
 
@@ -112,7 +111,18 @@ export default function MethodDashboard() {
         <RunPrediction />
 
 
-        <SystemSuitability />
+
+        <SystemSuitability
+
+          molecule={molecule}
+
+          organic={50}
+
+          flow={1}
+
+          temperature={30}
+
+        />
 
 
 
@@ -201,7 +211,6 @@ export default function MethodDashboard() {
 
 
       </div>
-
 
 
 
