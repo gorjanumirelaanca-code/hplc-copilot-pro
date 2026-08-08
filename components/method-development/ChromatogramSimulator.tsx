@@ -48,7 +48,6 @@ export default function ChromatogramSimulator() {
 
 
 
-
   const prediction = predictRetention(
 
     {
@@ -131,7 +130,6 @@ export default function ChromatogramSimulator() {
     let intensity = 2;
 
 
-
     chromatogram.peaks.forEach((peak) => {
 
 
@@ -168,16 +166,9 @@ export default function ChromatogramSimulator() {
 
 
 
-    points.push(
-
-      `${x},${y}`
-
-    );
-
+    points.push(`${x},${y}`);
 
   }
-
-
 
 
 
@@ -202,7 +193,6 @@ export default function ChromatogramSimulator() {
 
 
 
-
       <div className="border rounded-lg bg-slate-50 p-3">
 
 
@@ -215,7 +205,6 @@ export default function ChromatogramSimulator() {
           viewBox="0 0 520 260"
 
         >
-
 
 
           <line
@@ -249,7 +238,6 @@ export default function ChromatogramSimulator() {
 
 
 
-
           <path
 
             d={path}
@@ -264,11 +252,9 @@ export default function ChromatogramSimulator() {
 
 
 
-
           {chromatogram.peaks.map(
 
             (peak,index)=>(
-
 
               <text
 
@@ -294,11 +280,9 @@ export default function ChromatogramSimulator() {
 
               </text>
 
-
             )
 
           )}
-
 
 
 
@@ -337,6 +321,7 @@ export default function ChromatogramSimulator() {
 
 
       </div>
+
 
 
 
@@ -381,6 +366,119 @@ export default function ChromatogramSimulator() {
             {prediction.tailing}
 
           </strong>
+
+        </div>
+
+
+      </div>
+
+
+
+
+
+      <div className="mt-6">
+
+
+        <h3 className="text-lg font-bold mb-3">
+
+          Peak Analytics
+
+        </h3>
+
+
+
+        <div className="overflow-x-auto">
+
+
+          <table className="w-full text-sm border">
+
+
+            <thead>
+
+              <tr className="bg-slate-100">
+
+                <th className="border p-2 text-left">
+
+                  Peak
+
+                </th>
+
+                <th className="border p-2">
+
+                  RT (min)
+
+                </th>
+
+                <th className="border p-2">
+
+                  Width
+
+                </th>
+
+                <th className="border p-2">
+
+                  Tailing
+
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+
+            <tbody>
+
+
+              {chromatogram.peaks.map(
+
+                (peak,index)=>(
+
+
+                  <tr key={index}>
+
+
+                    <td className="border p-2">
+
+                      {peak.name}
+
+                    </td>
+
+
+                    <td className="border p-2 text-center">
+
+                      {peak.retentionTime}
+
+                    </td>
+
+
+                    <td className="border p-2 text-center">
+
+                      {peak.width}
+
+                    </td>
+
+
+                    <td className="border p-2 text-center">
+
+                      {peak.tailing}
+
+                    </td>
+
+
+                  </tr>
+
+
+                )
+
+              )}
+
+
+            </tbody>
+
+
+          </table>
+
 
         </div>
 
