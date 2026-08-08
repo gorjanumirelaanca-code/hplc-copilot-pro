@@ -1,71 +1,60 @@
 "use client";
 
 import { useLabStore } from "@/lib/store/useLabStore";
-import { recommendPH } from "@/lib/ai";
+import { runMethodEngine } from "@/lib/ai/methodEngine";
 
-export default function BufferRecommendation() {
+export default function ColumnRecommendation() {
 
   const { molecule } = useLabStore();
 
-  const buffer = recommendPH({
 
-    molecularWeight: Number(molecule.molecularWeight) || 250,
+  const result = runMethodEngine(
+    molecule,
+    {
+      organic: 50,
+      pH: 6.5,
+      flow: 1
+    }
+  );
 
-    logP: Number(molecule.xlogP) || 2,
-
-    pKa: 4.5,
-
-    tpsa: Number(molecule.tpsa) || 40,
-
-    hBondDonors: Number(molecule.hBondDonors) || 1,
-
-    hBondAcceptors: Number(molecule.hBondAcceptors) || 2
-
-  });
 
   return (
 
     <div className="rounded-xl border shadow bg-white p-6">
 
       <h2 className="text-2xl font-bold mb-5">
-
-        AI Buffer Recommendation
-
+        AI Column Recommendation
       </h2>
+
 
       <div className="space-y-3">
 
         <div className="flex justify-between">
-
-          <span>Buffer</span>
-
-          <strong>{buffer.buffer}</strong>
-
+          <span>Column</span>
+          <strong>
+            {result.column.column}
+          </strong>
         </div>
+
 
         <div className="flex justify-between">
-
-          <span>pH</span>
-
-          <strong>{buffer.pH}</strong>
-
+          <span>Particle</span>
+          <strong>
+            {result.column.particle}
+          </strong>
         </div>
+
 
         <div className="flex justify-between">
-
-          <span>Ionic Strength</span>
-
-          <strong>{buffer.ionicStrength}</strong>
-
+          <span>Dimensions</span>
+          <strong>
+            {result.column.dimensions}
+          </strong>
         </div>
+
 
       </div>
 
-      <div className="mt-5 rounded-lg bg-blue-50 p-4">
-
-        {buffer.explanation}
-
-      </div>
 
     </div>
 

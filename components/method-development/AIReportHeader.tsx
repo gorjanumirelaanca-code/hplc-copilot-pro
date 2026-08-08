@@ -1,29 +1,22 @@
 "use client";
 
-
-interface AIReportHeaderProps {
-
-  ai?: any;
-
-}
+import { useLabStore } from "@/lib/store/useLabStore";
+import { runMethodEngine } from "@/lib/ai/methodEngine";
 
 
+export default function AIReportHeader() {
 
-export default function AIReportHeader({
-
-  ai = {}
-
-}: AIReportHeaderProps) {
+  const { molecule } = useLabStore();
 
 
-  const engine = ai.engine ?? {};
-
-  const column = engine.column ?? {};
-
-  const mobilePhase = engine.mobilePhase ?? {};
-
-  const prediction = engine.prediction ?? {};
-
+  const engine = runMethodEngine(
+    molecule,
+    {
+      organic: 50,
+      flow: 1,
+      pH: 6.5
+    }
+  );
 
 
   return (
@@ -38,17 +31,18 @@ export default function AIReportHeader({
       </h2>
 
 
-
       <div className="grid gap-3 text-sm">
 
 
         <p>
 
-          <strong>Column Recommendation:</strong>
+          <strong>
+            Column Recommendation:
+          </strong>
 
           <br />
 
-          {column.column ?? "Not available"}
+          {engine.column.column}
 
         </p>
 
@@ -56,15 +50,15 @@ export default function AIReportHeader({
 
         <p>
 
-          <strong>Mobile Phase:</strong>
+          <strong>
+            Mobile Phase:
+          </strong>
 
           <br />
 
-          {mobilePhase.organic ?? "-"} /
-
-          {" "}
-
-          {mobilePhase.buffer ?? "-"}
+          {engine.mobilePhase.organic}
+          {" / "}
+          {engine.mobilePhase.buffer}
 
         </p>
 
@@ -72,11 +66,14 @@ export default function AIReportHeader({
 
         <p>
 
-          <strong>Predicted Retention:</strong>
+          <strong>
+            Predicted Retention:
+          </strong>
 
           <br />
 
-          {prediction.retentionTime ?? "-"} min
+          {engine.prediction.retentionTime}
+          {" min"}
 
         </p>
 
@@ -84,11 +81,13 @@ export default function AIReportHeader({
 
         <p>
 
-          <strong>Method Score:</strong>
+          <strong>
+            Method Score:
+          </strong>
 
           <br />
 
-          {engine.score ?? 0}/100
+          {engine.score}/100
 
         </p>
 
