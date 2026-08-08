@@ -16,7 +16,9 @@ export interface MethodEngineResult {
 
   };
 
+
   score: number;
+
 
   column: {
 
@@ -28,6 +30,7 @@ export interface MethodEngineResult {
 
   };
 
+
   mobilePhase: {
 
     organic: string;
@@ -35,6 +38,17 @@ export interface MethodEngineResult {
     buffer: string;
 
     pH: number;
+
+  };
+
+
+  gradient: {
+
+    start: string;
+
+    end: string;
+
+    time: string;
 
   };
 
@@ -51,87 +65,26 @@ export function runMethodEngine(
 ): MethodEngineResult {
 
 
-  const logP = Number(molecule.xlogP ?? molecule.logP ?? 2);
+  const logP = molecule.xlogP ?? molecule.logP ?? 2;
 
-  const tpsa = Number(molecule.tpsa ?? 40);
+  const tpsa = molecule.tpsa ?? 40;
 
-  const molecularWeight = Number(molecule.molecularWeight ?? 250);
+  const molecularWeight =
+    molecule.molecularWeight ?? 250;
 
-  const pKa = Number(molecule.pKa ?? 5);
-
-
-  /*
-    Column selection logic
-  */
-
-  let column = "C18 Reversed Phase";
-
-  let particle = "5 µm";
-
-  let dimensions = "150 × 4.6 mm";
-
-
-  if (logP < 1 && tpsa > 70) {
-
-    column = "HILIC";
-
-    particle = "3 µm";
-
-    dimensions = "100 × 2.1 mm";
-
-  }
-
-
-  /*
-    Mobile phase selection
-  */
 
   const organic =
-
-    logP > 3
-
-      ? "Acetonitrile"
-
-      : "Methanol";
+    method.organic ?? 50;
 
 
-  /*
-    pH recommendation
-  */
-
-  const recommendedPH =
-
-    pKa < 4
-
-      ? 3
-
-      : pKa > 8
-
-        ? 8
-
-        : 6.5;
-
-
-
-  const organicPercent =
-
-    Number(method.organic ?? 50);
-
-
-
-  /*
-    Retention prediction
-  */
 
   const retentionTime =
 
-    1.5 +
+    2 +
 
-    logP * 1.1 +
+    logP * 1.2 -
 
-    tpsa / 100 -
-
-    organicPercent / 120;
+    organic / 100;
 
 
 
@@ -147,7 +100,9 @@ export function runMethodEngine(
 
       Number(
 
-        (1.8 + tpsa / 120).toFixed(2)
+        (1.8 + tpsa / 100)
+
+        .toFixed(2)
 
       ),
 
@@ -156,7 +111,9 @@ export function runMethodEngine(
 
       Number(
 
-        (1.05 + molecularWeight / 6000).toFixed(2)
+        (1.1 + molecularWeight / 5000)
+
+        .toFixed(2)
 
       ),
 
@@ -165,7 +122,9 @@ export function runMethodEngine(
 
       Number(
 
-        (retentionTime / 0.5).toFixed(2)
+        (retentionTime / 0.5)
+
+        .toFixed(2)
 
       ),
 
@@ -174,7 +133,9 @@ export function runMethodEngine(
 
       Number(
 
-        (retentionTime * 0.08).toFixed(2)
+        (retentionTime * 0.08)
+
+        .toFixed(2)
 
       ),
 
@@ -183,7 +144,9 @@ export function runMethodEngine(
 
       Number(
 
-        (1 + Math.abs(logP) / 12).toFixed(2)
+        (1 + Math.abs(logP) / 10)
+
+        .toFixed(2)
 
       )
 
@@ -199,13 +162,46 @@ export function runMethodEngine(
 
       70 +
 
-      prediction.resolution * 6 -
+      prediction.resolution * 5 -
 
       prediction.tailingFactor * 5
 
     )
 
   );
+
+
+
+  const gradient = {
+
+
+    start:
+
+      organic > 60
+
+      ? "60% Organic"
+
+      : "30% Organic",
+
+
+    end:
+
+      organic > 60
+
+      ? "90% Organic"
+
+      : "80% Organic",
+
+
+    time:
+
+      molecularWeight > 500
+
+      ? "25 min"
+
+      : "15 min"
+
+  };
 
 
 
@@ -218,31 +214,60 @@ export function runMethodEngine(
     score,
 
 
+
     column: {
 
-      column,
 
-      particle,
+      column:
 
-      dimensions
+        "C18 Reversed Phase",
+
+
+      particle:
+
+        "5 µm",
+
+
+      dimensions:
+
+        "150 × 4.6 mm"
 
     },
 
 
+
     mobilePhase: {
 
-      organic,
+
+      organic:
+
+        organic > 60
+
+        ? "Acetonitrile"
+
+        : "Methanol",
+
+
 
       buffer:
 
         "Phosphate Buffer",
 
 
+
       pH:
 
-        recommendedPH
+        molecule.pKa < 5
 
-    }
+        ? 3
+
+        : 6.5
+
+    },
+
+
+
+    gradient
 
   };
 
