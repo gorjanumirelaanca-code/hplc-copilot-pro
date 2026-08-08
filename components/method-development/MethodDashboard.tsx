@@ -4,7 +4,6 @@ import { useLabStore } from "@/lib/store/useLabStore";
 import { runMethodEngine } from "@/lib/ai/methodEngine";
 import { optimizeMethod } from "@/lib/ai/methodOptimizer";
 
-
 import AIReportHeader from "./AIReportHeader";
 import MoleculeCard from "./MoleculeCard";
 import MoleculeSearch from "./MoleculeSearch";
@@ -28,6 +27,7 @@ import MethodWarnings from "./MethodWarnings";
 import AIOptimizer from "./AIOptimizer";
 import AIKnowledgePanel from "./AIKnowledgePanel";
 import AIOptimizationReport from "./AIOptimizationReport";
+import OptimizationCompare from "./OptimizationCompare";
 
 import MethodChecklist from "./MethodChecklist";
 import MethodDecisionTree from "./MethodDecisionTree";
@@ -36,241 +36,251 @@ import ExportPDFCard from "./ExportPDFCard";
 import MethodActions from "./MethodActions";
 
 
-
 export default function MethodDashboard() {
 
 
-  const { molecule } = useLabStore();
+const { molecule } = useLabStore();
 
 
 
-  const result = runMethodEngine(
+const result = runMethodEngine(
 
-    molecule,
+  molecule,
 
-    {
+  {
+    organic: 50,
+    flow: 1,
+    pH: 6.5
+  }
 
-      organic: 50,
+);
 
-      flow: 1,
 
-      pH: 6.5
 
-    }
+const optimization = optimizeMethod(
 
-  );
+  result.prediction,
 
+  {
+    organic: 50,
+    flow: 1
+  }
 
+);
 
 
 
-  const optimization = optimizeMethod(
+return (
 
-    result.prediction,
+<div className="space-y-8">
 
-    {
 
-      organic: 50,
+<AIReportHeader />
 
-      flow: 1
 
-    }
+<MoleculeSearch />
 
-  );
 
 
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
 
+<MoleculeCard />
 
-  return (
 
-    <div className="space-y-8">
+<StructureViewer molecule={molecule} />
 
 
-      <AIReportHeader />
+<MethodSummary />
 
 
-      <MoleculeSearch />
+</div>
 
 
 
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
+<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-        <MoleculeCard />
 
+<ColumnRecommendation />
 
-        <StructureViewer molecule={molecule} />
 
+<MobilePhaseRecommendation />
 
-        <MethodSummary />
 
+<BufferRecommendation />
 
-      </div>
 
 
+<GradientRecommendation
 
+gradient={result.gradient}
 
+/>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
 
+<MethodConditions />
 
-        <ColumnRecommendation />
 
+<RetentionPredictionCard />
 
-        <MobilePhaseRecommendation />
 
+<RunPrediction />
 
-        <BufferRecommendation />
 
 
+<SystemSuitability
 
-        <GradientRecommendation
+molecule={molecule}
 
-          gradient={result.gradient}
+organic={50}
 
-        />
+flow={1}
 
+temperature={30}
 
+/>
 
-        <MethodConditions />
 
 
-        <RetentionPredictionCard />
+<ChromatogramSimulator />
 
 
-        <RunPrediction />
 
+<MethodScore
 
+score={result.score}
 
-        <SystemSuitability
+prediction={result.prediction}
 
-          molecule={molecule}
+/>
 
-          organic={50}
 
-          flow={1}
 
-          temperature={30}
+<AIConfidence
 
-        />
+confidence={Math.round(result.score)}
 
+/>
 
 
-        <ChromatogramSimulator />
 
+<LabReadiness
 
+ai={{
 
-        <MethodScore
+engine: result,
 
-          score={result.score}
+system: {
 
-          prediction={result.prediction}
+pass:true
 
-        />
+}
 
+}}
 
+/>
 
-        <AIConfidence
 
-          confidence={Math.round(result.score)}
 
-        />
+<AIOptimizer
 
+ai={{
 
+engine: result,
 
-        <LabReadiness
+system: {
 
-          ai={{
+pressure:250
 
-            engine: result,
+}
 
-            system: {
+}}
 
-              pass:true
+/>
 
-            }
 
-          }}
 
-        />
+<AIOptimizationReport
 
+optimization={optimization}
 
+/>
 
-        <AIOptimizer
 
-          ai={{
 
-            engine: result,
+<OptimizationCompare
 
-            system: {
+current={{
 
-              pressure:250
+organic:50,
 
-            }
+retentionTime: result.prediction.retentionTime,
 
-          }}
+score: result.score
 
-        />
+}}
 
+optimized={{
 
+organic:40,
 
-        <AIOptimizationReport
+retentionTime: optimization.expectedImprovement.retentionTime,
 
-          optimization={optimization}
+score: optimization.score + 5
 
-        />
+}}
 
+/>
 
 
-        <AIKnowledgePanel
 
-          ai={{
+<AIKnowledgePanel
 
-            engine:result
+ai={{
 
-          }}
+engine:result
 
-        />
+}}
 
+/>
 
 
-        <MethodWarnings />
 
+<MethodWarnings />
 
 
-      </div>
+</div>
 
 
 
 
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+<div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
 
-        <MethodChecklist />
+<MethodChecklist />
 
 
-        <MethodDecisionTree />
+<MethodDecisionTree />
 
 
-      </div>
+</div>
 
 
 
 
 
-      <ExportPDFCard />
+<ExportPDFCard />
 
 
-      <MethodActions />
+<MethodActions />
 
 
+</div>
 
-    </div>
-
-  );
+);
 
 }
