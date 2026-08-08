@@ -1,62 +1,103 @@
-export interface Peak {
+export interface ChromatogramPeak {
 
   name: string;
 
   retentionTime: number;
 
+  intensity: number;
+
   width: number;
 
-  height: number;
+  tailing: number;
 
 }
 
-export interface Chromatogram {
 
-  peaks: Peak[];
 
-  pressure: number;
+export interface ChromatogramResult {
 
-  runtime: number;
+  peaks: ChromatogramPeak[];
+
+  totalTime: number;
 
 }
 
-export function predictChromatogram(
-  method:any,
-  molecule:any
-): Chromatogram {
 
-  const logP =
-    Number(molecule.logP ?? 3);
 
-  let rt = 5.0;
+export function generateChromatogram(
 
-  if(logP>4)
-    rt=7.2;
+  prediction: any = {}
 
-  if(logP<1)
-    rt=1.8;
+): ChromatogramResult {
+
+
+  const rt = prediction.retentionTime ?? 3;
+
+  const resolution = prediction.resolution ?? 2;
+
+  const tailing = prediction.tailingFactor ?? 1.2;
+
+  const width = prediction.peakWidth ?? 0.15;
+
+
+
+  const peaks = [
+
+
+    {
+
+      name: "Peak 1",
+
+      retentionTime: Number((rt * 0.8).toFixed(2)),
+
+      intensity: 75,
+
+      width,
+
+      tailing
+
+    },
+
+
+    {
+
+      name: "Peak 2",
+
+      retentionTime: Number(rt.toFixed(2)),
+
+      intensity: 100,
+
+      width,
+
+      tailing
+
+    },
+
+
+    {
+
+      name: "Peak 3",
+
+      retentionTime: Number((rt * 1.35).toFixed(2)),
+
+      intensity: 60,
+
+      width,
+
+      tailing
+
+    }
+
+
+  ];
+
+
 
   return {
 
-    pressure:185,
+    peaks,
 
-    runtime:10,
-
-    peaks:[
-
-      {
-
-        name:molecule.name ?? "Compound",
-
-        retentionTime:rt,
-
-        width:0.18,
-
-        height:100
-
-      }
-
-    ]
+    totalTime: Number((rt * 2).toFixed(2))
 
   };
 
