@@ -1,105 +1,96 @@
 "use client";
 
-
 interface Molecule {
-
   name?: string;
-
-  smiles?: string;
-
+  formula?: string;
   molecularWeight?: number;
 
-  formula?: string;
+  smiles?: string;
+  canonicalSmiles?: string;
 
   iupacName?: string;
-
 }
-
-
 
 interface StructureViewerProps {
-
   molecule?: Molecule;
-
 }
 
-
-
 export default function StructureViewer({
-
-  molecule
-
+  molecule,
 }: StructureViewerProps) {
 
+  const smiles =
+    molecule?.smiles ||
+    molecule?.canonicalSmiles ||
+    "";
 
   return (
+    <div className="rounded-xl border shadow bg-white p-6">
 
-    <div className="rounded-xl border bg-white shadow p-6">
-
-
-      <h2 className="text-xl font-bold mb-4">
-
+      <h2 className="text-2xl font-bold mb-5">
         Molecular Structure Viewer
-
       </h2>
-
 
 
       {molecule ? (
 
+        <div className="space-y-4">
 
-        <div className="space-y-3">
 
+          <div className="flex justify-between">
+            <span className="font-medium">
+              Compound
+            </span>
 
-          <p className="font-semibold">
-
-            {molecule.name || "Unknown compound"}
-
-          </p>
+            <strong>
+              {molecule.name || "Unknown compound"}
+            </strong>
+          </div>
 
 
 
           {molecule.formula && (
+            <div className="flex justify-between">
+              <span>
+                Formula
+              </span>
 
-            <p className="text-sm">
-
-              Formula: {molecule.formula}
-
-            </p>
-
+              <strong>
+                {molecule.formula}
+              </strong>
+            </div>
           )}
 
 
 
           {molecule.molecularWeight && (
+            <div className="flex justify-between">
+              <span>
+                Molecular Weight
+              </span>
 
-            <p className="text-sm">
-
-              Molecular Weight: {molecule.molecularWeight}
-
-            </p>
-
+              <strong>
+                {molecule.molecularWeight}
+              </strong>
+            </div>
           )}
 
 
 
-          {molecule.smiles && (
+          {smiles && (
 
-            <div>
+            <div className="mt-6">
 
-
-              <p className="text-sm font-semibold">
-
+              <h3 className="font-semibold mb-2">
                 SMILES
+              </h3>
 
-              </p>
 
+              <div className="rounded-lg bg-gray-100 p-3 text-sm break-all">
 
-              <p className="text-xs break-all bg-slate-100 rounded p-3">
+                {smiles}
 
-                {molecule.smiles}
-
-              </p>
+              </div>
 
 
             </div>
@@ -110,20 +101,15 @@ export default function StructureViewer({
 
           {molecule.iupacName && (
 
-            <div>
+            <div className="mt-4">
 
-
-              <p className="text-sm font-semibold">
-
+              <h3 className="font-semibold mb-2">
                 IUPAC Name
+              </h3>
 
-              </p>
 
-
-              <p className="text-xs">
-
+              <p className="text-sm">
                 {molecule.iupacName}
-
               </p>
 
 
@@ -133,24 +119,34 @@ export default function StructureViewer({
 
 
 
+          <div className="mt-6 rounded-lg bg-blue-50 p-4 text-sm">
+
+            Structure rendering placeholder.
+
+            <br />
+
+            Next upgrade:
+            RDKit.js / PubChem SVG 2D structure visualization.
+
+          </div>
+
+
+
         </div>
 
 
       ) : (
 
-
-        <p className="text-slate-500">
+        <div className="text-gray-500">
 
           Search for a molecule to display structure information.
 
-        </p>
-
+        </div>
 
       )}
 
 
+
     </div>
-
   );
-
 }
