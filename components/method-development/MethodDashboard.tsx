@@ -93,7 +93,6 @@ export default function MethodDashboard() {
         <BufferRecommendation />
 
 
-
         <GradientRecommendation
 
           gradient={result.gradient}
@@ -112,7 +111,6 @@ export default function MethodDashboard() {
 
 
         <SystemSuitability />
-
 
 
         <MethodScore
@@ -142,7 +140,16 @@ export default function MethodDashboard() {
         <AIOptimizer />
 
 
-        <AIKnowledgePanel />
+
+        <AIKnowledgePanel
+
+          ai={{
+
+            engine: result
+
+          }}
+
+        />
 
 
       </div>
