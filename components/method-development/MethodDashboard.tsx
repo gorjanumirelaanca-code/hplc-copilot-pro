@@ -1,3 +1,8 @@
+"use client";
+
+import { useLabStore } from "@/lib/store/useLabStore";
+import { runMethodEngine } from "@/lib/ai/methodEngine";
+
 import AIReportHeader from "./AIReportHeader";
 import MoleculeCard from "./MoleculeCard";
 import MoleculeSearch from "./MoleculeSearch";
@@ -28,14 +33,27 @@ import MethodActions from "./MethodActions";
 
 export default function MethodDashboard() {
 
+  const { molecule } = useLabStore();
+
+
+  const result = runMethodEngine(
+    molecule,
+    {
+      organic: 50,
+      flow: 1,
+      pH: 6.5
+    }
+  );
+
+
   return (
 
     <div className="space-y-8">
 
+
       <AIReportHeader />
 
 
-      {/* Molecule Input */}
       <MoleculeSearch />
 
 
@@ -43,7 +61,7 @@ export default function MethodDashboard() {
 
         <MoleculeCard />
 
-        <StructureViewer />
+        <StructureViewer molecule={molecule} />
 
         <MethodSummary />
 
@@ -53,33 +71,50 @@ export default function MethodDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
+
         <ColumnRecommendation />
+
 
         <MobilePhaseRecommendation />
 
+
         <BufferRecommendation />
 
-        <GradientRecommendation />
+
+        <GradientRecommendation
+          gradient={result.gradient}
+        />
+
 
         <MethodConditions />
 
+
         <RetentionPredictionCard />
+
 
         <RunPrediction />
 
+
         <SystemSuitability />
+
 
         <MethodScore />
 
+
         <AIConfidence />
+
 
         <LabReadiness />
 
+
         <MethodWarnings />
+
 
         <AIOptimizer />
 
+
         <AIKnowledgePanel />
+
 
       </div>
 
@@ -96,6 +131,7 @@ export default function MethodDashboard() {
 
 
       <ExportPDFCard />
+
 
       <MethodActions />
 
