@@ -93,6 +93,7 @@ export default function MethodDashboard() {
         <BufferRecommendation />
 
 
+
         <GradientRecommendation
 
           gradient={result.gradient}
@@ -111,6 +112,7 @@ export default function MethodDashboard() {
 
 
         <SystemSuitability />
+
 
 
         <MethodScore
@@ -134,10 +136,26 @@ export default function MethodDashboard() {
         <LabReadiness />
 
 
+
         <MethodWarnings />
 
 
-        <AIOptimizer />
+
+        <AIOptimizer
+
+          ai={{
+
+            engine: result,
+
+            system: {
+
+              pressure: 250
+
+            }
+
+          }}
+
+        />
 
 
 
