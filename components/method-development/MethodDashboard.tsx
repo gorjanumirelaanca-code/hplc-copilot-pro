@@ -93,11 +93,13 @@ export default function MethodDashboard() {
         <BufferRecommendation />
 
 
+
         <GradientRecommendation
 
           gradient={result.gradient}
 
         />
+
 
 
         <MethodConditions />
@@ -123,7 +125,12 @@ export default function MethodDashboard() {
 
 
 
-        <AIConfidence />
+        <AIConfidence
+
+          confidence={Math.round(result.score)}
+
+        />
+
 
 
         <LabReadiness />
@@ -162,7 +169,6 @@ export default function MethodDashboard() {
 
 
       <MethodActions />
-
 
 
     </div>
