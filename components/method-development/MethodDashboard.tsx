@@ -81,6 +81,7 @@ export default function MethodDashboard() {
 
 
 
+
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
 
@@ -133,7 +134,21 @@ export default function MethodDashboard() {
 
 
 
-        <LabReadiness />
+        <LabReadiness
+
+          ai={{
+
+            engine: result,
+
+            system: {
+
+              pass: true
+
+            }
+
+          }}
+
+        />
 
 
 
@@ -186,6 +201,7 @@ export default function MethodDashboard() {
 
 
       </div>
+
 
 
 
