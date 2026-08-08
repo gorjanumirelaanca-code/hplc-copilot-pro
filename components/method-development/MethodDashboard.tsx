@@ -1,8 +1,11 @@
 "use client";
 
 import { useLabStore } from "@/lib/store/useLabStore";
+import { useMethodStore } from "@/lib/store/useMethodStore";
+
 import { runMethodEngine } from "@/lib/ai/methodEngine";
 import { optimizeMethod } from "@/lib/ai/methodOptimizer";
+
 
 import AIReportHeader from "./AIReportHeader";
 import MoleculeCard from "./MoleculeCard";
@@ -44,18 +47,38 @@ export default function MethodDashboard() {
 const { molecule } = useLabStore();
 
 
+const {
+
+  organic,
+
+  flow,
+
+  pH,
+
+  temperature
+
+} = useMethodStore();
+
+
+
+
 
 const result = runMethodEngine(
 
   molecule,
 
   {
-    organic: 50,
-    flow: 1,
-    pH: 6.5
+
+    organic,
+
+    flow,
+
+    pH
+
   }
 
 );
+
 
 
 
@@ -65,11 +88,15 @@ const optimization = optimizeMethod(
   result.prediction,
 
   {
-    organic: 50,
-    flow: 1
+
+    organic,
+
+    flow
+
   }
 
 );
+
 
 
 
@@ -83,6 +110,8 @@ return (
 
 
 <MoleculeSearch />
+
+
 
 
 
@@ -104,6 +133,8 @@ return (
 
 
 
+
+
 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
 
@@ -111,10 +142,13 @@ return (
 <ColumnRecommendation />
 
 
+
 <MobilePhaseRecommendation />
 
 
+
 <BufferRecommendation />
+
 
 
 
@@ -126,13 +160,19 @@ gradient={result.gradient}
 
 
 
+
+
 <MethodConditions />
+
 
 
 <RetentionPredictionCard />
 
 
+
 <RunPrediction />
+
+
 
 
 
@@ -140,17 +180,21 @@ gradient={result.gradient}
 
 molecule={molecule}
 
-organic={50}
+organic={organic}
 
-flow={1}
+flow={flow}
 
-temperature={30}
+temperature={temperature}
 
 />
 
 
 
+
+
 <ChromatogramSimulator />
+
+
 
 
 
@@ -164,11 +208,15 @@ prediction={result.prediction}
 
 
 
+
+
 <AIConfidence
 
 confidence={Math.round(result.score)}
 
 />
+
+
 
 
 
@@ -190,6 +238,8 @@ pass:true
 
 
 
+
+
 <AIOptimizer
 
 ai={{
@@ -208,6 +258,8 @@ pressure:250
 
 
 
+
+
 <AIOptimizationReport
 
 optimization={optimization}
@@ -216,11 +268,14 @@ optimization={optimization}
 
 
 
+
+
+
 <OptimizationCompare
 
 current={{
 
-organic:50,
+organic,
 
 retentionTime: result.prediction.retentionTime,
 
@@ -230,7 +285,7 @@ score: result.score
 
 optimized={{
 
-organic:40,
+organic: organic - 10,
 
 retentionTime: optimization.expectedImprovement.retentionTime,
 
@@ -242,11 +297,14 @@ score: optimization.score + 5
 
 
 
+
+
+
 <ChromatogramComparison
 
 current={{
 
-organic:50,
+organic,
 
 retentionTime: result.prediction.retentionTime,
 
@@ -256,7 +314,7 @@ resolution: result.prediction.resolution
 
 optimized={{
 
-organic:40,
+organic: organic - 10,
 
 retentionTime: optimization.expectedImprovement.retentionTime,
 
@@ -268,11 +326,14 @@ resolution: optimization.score
 
 
 
+
+
+
 <AIKnowledgePanel
 
 ai={{
 
-engine:result
+engine: result
 
 }}
 
@@ -280,10 +341,15 @@ engine:result
 
 
 
+
+
 <MethodWarnings />
 
 
+
 </div>
+
+
 
 
 
@@ -304,10 +370,13 @@ engine:result
 
 
 
+
+
 <ExportPDFCard />
 
 
 <MethodActions />
+
 
 
 </div>
