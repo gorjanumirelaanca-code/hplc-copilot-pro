@@ -1,71 +1,116 @@
 "use client";
 
 import { useLabStore } from "@/lib/store/useLabStore";
-import { recommendPH } from "@/lib/ai";
 
-export default function BufferRecommendation() {
+
+export default function MobilePhaseRecommendation() {
+
 
   const { molecule } = useLabStore();
 
-  const buffer = recommendPH({
 
-    molecularWeight: Number(molecule.molecularWeight) || 250,
 
-    logP: Number(molecule.xlogP) || 2,
+  const logP =
+    Number(molecule.xlogP) || 2;
 
-    pKa: 4.5,
 
-    tpsa: Number(molecule.tpsa) || 40,
 
-    hBondDonors: Number(molecule.hBondDonors) || 1,
+  const recommendation =
 
-    hBondAcceptors: Number(molecule.hBondAcceptors) || 2
+    logP > 2
 
-  });
+      ? {
+
+          organic: "Acetonitrile",
+
+          percentage: "60%",
+
+          mode: "High organic strength for hydrophobic compounds",
+
+        }
+
+      : {
+
+          organic: "Methanol",
+
+          percentage: "40%",
+
+          mode: "Moderate organic strength for polar compounds",
+
+        };
+
+
+
 
   return (
 
     <div className="rounded-xl border shadow bg-white p-6">
 
+
       <h2 className="text-2xl font-bold mb-5">
 
-        AI Buffer Recommendation
+        AI Mobile Phase Recommendation
 
       </h2>
 
+
+
+
       <div className="space-y-3">
 
-        <div className="flex justify-between">
-
-          <span>Buffer</span>
-
-          <strong>{buffer.buffer}</strong>
-
-        </div>
 
         <div className="flex justify-between">
 
-          <span>pH</span>
+          <span>Organic Solvent</span>
 
-          <strong>{buffer.pH}</strong>
+          <strong>
+
+            {recommendation.organic}
+
+          </strong>
 
         </div>
+
+
 
         <div className="flex justify-between">
 
-          <span>Ionic Strength</span>
+          <span>Organic %</span>
 
-          <strong>{buffer.ionicStrength}</strong>
+          <strong>
+
+            {recommendation.percentage}
+
+          </strong>
 
         </div>
+
+
+
+        <div className="flex justify-between">
+
+          <span>Strategy</span>
+
+          <strong className="text-right">
+
+            {recommendation.mode}
+
+          </strong>
+
+        </div>
+
 
       </div>
+
+
+
 
       <div className="mt-5 rounded-lg bg-blue-50 p-4">
 
-        {buffer.explanation}
+        Mobile phase selected based on predicted analyte hydrophobicity (logP).
 
       </div>
+
 
     </div>
 
