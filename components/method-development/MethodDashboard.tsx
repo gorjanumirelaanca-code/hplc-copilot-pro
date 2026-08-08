@@ -26,8 +26,10 @@ import LabReadiness from "./LabReadiness";
 import MethodWarnings from "./MethodWarnings";
 import AIOptimizer from "./AIOptimizer";
 import AIKnowledgePanel from "./AIKnowledgePanel";
+
 import AIOptimizationReport from "./AIOptimizationReport";
 import OptimizationCompare from "./OptimizationCompare";
+import ChromatogramComparison from "./ChromatogramComparison";
 
 import MethodChecklist from "./MethodChecklist";
 import MethodDecisionTree from "./MethodDecisionTree";
@@ -57,6 +59,7 @@ const result = runMethodEngine(
 
 
 
+
 const optimization = optimizeMethod(
 
   result.prediction,
@@ -67,6 +70,7 @@ const optimization = optimizeMethod(
   }
 
 );
+
 
 
 
@@ -101,6 +105,7 @@ return (
 
 
 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
 
 
 <ColumnRecommendation />
@@ -230,6 +235,32 @@ organic:40,
 retentionTime: optimization.expectedImprovement.retentionTime,
 
 score: optimization.score + 5
+
+}}
+
+/>
+
+
+
+<ChromatogramComparison
+
+current={{
+
+organic:50,
+
+retentionTime: result.prediction.retentionTime,
+
+resolution: result.prediction.resolution
+
+}}
+
+optimized={{
+
+organic:40,
+
+retentionTime: optimization.expectedImprovement.retentionTime,
+
+resolution: optimization.score
 
 }}
 
