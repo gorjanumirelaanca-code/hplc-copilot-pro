@@ -17,6 +17,8 @@ import MethodConditions from "./MethodConditions";
 import RetentionPredictionCard from "./RetentionPredictionCard";
 import RunPrediction from "./RunPrediction";
 import SystemSuitability from "./SystemSuitability";
+import ChromatogramSimulator from "./ChromatogramSimulator";
+
 import MethodScore from "./MethodScore";
 import AIConfidence from "./AIConfidence";
 import LabReadiness from "./LabReadiness";
@@ -81,6 +83,7 @@ export default function MethodDashboard() {
 
 
 
+
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
 
@@ -123,6 +126,10 @@ export default function MethodDashboard() {
           temperature={30}
 
         />
+
+
+
+        <ChromatogramSimulator />
 
 
 
@@ -211,6 +218,7 @@ export default function MethodDashboard() {
 
 
       </div>
+
 
 
 
