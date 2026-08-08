@@ -16,9 +16,7 @@ export interface MethodEngineResult {
 
   };
 
-
   score: number;
-
 
   column: {
 
@@ -29,7 +27,6 @@ export interface MethodEngineResult {
     dimensions: string;
 
   };
-
 
   mobilePhase: {
 
@@ -54,23 +51,87 @@ export function runMethodEngine(
 ): MethodEngineResult {
 
 
-  const logP = molecule.logP ?? 2;
+  const logP = Number(molecule.xlogP ?? molecule.logP ?? 2);
 
-  const tpsa = molecule.tpsa ?? 40;
+  const tpsa = Number(molecule.tpsa ?? 40);
 
-  const molecularWeight = molecule.molecularWeight ?? 250;
+  const molecularWeight = Number(molecule.molecularWeight ?? 250);
 
-  const organic = method.organic ?? 50;
+  const pKa = Number(molecule.pKa ?? 5);
 
 
+  /*
+    Column selection logic
+  */
+
+  let column = "C18 Reversed Phase";
+
+  let particle = "5 µm";
+
+  let dimensions = "150 × 4.6 mm";
+
+
+  if (logP < 1 && tpsa > 70) {
+
+    column = "HILIC";
+
+    particle = "3 µm";
+
+    dimensions = "100 × 2.1 mm";
+
+  }
+
+
+  /*
+    Mobile phase selection
+  */
+
+  const organic =
+
+    logP > 3
+
+      ? "Acetonitrile"
+
+      : "Methanol";
+
+
+  /*
+    pH recommendation
+  */
+
+  const recommendedPH =
+
+    pKa < 4
+
+      ? 3
+
+      : pKa > 8
+
+        ? 8
+
+        : 6.5;
+
+
+
+  const organicPercent =
+
+    Number(method.organic ?? 50);
+
+
+
+  /*
+    Retention prediction
+  */
 
   const retentionTime =
 
-    2 +
+    1.5 +
 
-    logP * 1.2 -
+    logP * 1.1 +
 
-    organic / 100;
+    tpsa / 100 -
+
+    organicPercent / 120;
 
 
 
@@ -84,31 +145,47 @@ export function runMethodEngine(
 
     resolution:
 
-      Number((1.8 + tpsa / 100).toFixed(2)),
+      Number(
+
+        (1.8 + tpsa / 120).toFixed(2)
+
+      ),
 
 
     tailingFactor:
 
       Number(
 
-        (1.1 + molecularWeight / 5000).toFixed(2)
+        (1.05 + molecularWeight / 6000).toFixed(2)
 
       ),
 
 
     capacityFactor:
 
-      Number((retentionTime / 0.5).toFixed(2)),
+      Number(
+
+        (retentionTime / 0.5).toFixed(2)
+
+      ),
 
 
     peakWidth:
 
-      Number((retentionTime * 0.08).toFixed(2)),
+      Number(
+
+        (retentionTime * 0.08).toFixed(2)
+
+      ),
 
 
     selectivity:
 
-      Number((1 + Math.abs(logP) / 10).toFixed(2))
+      Number(
+
+        (1 + Math.abs(logP) / 12).toFixed(2)
+
+      )
 
   };
 
@@ -122,7 +199,7 @@ export function runMethodEngine(
 
       70 +
 
-      prediction.resolution * 5 -
+      prediction.resolution * 6 -
 
       prediction.tailingFactor * 5
 
@@ -143,35 +220,18 @@ export function runMethodEngine(
 
     column: {
 
+      column,
 
-      column:
+      particle,
 
-        "C18 Reversed Phase",
-
-
-      particle:
-
-        "5 µm",
-
-
-      dimensions:
-
-        "150 × 4.6 mm"
+      dimensions
 
     },
 
 
     mobilePhase: {
 
-
-      organic:
-
-        organic > 60
-
-        ? "Acetonitrile"
-
-        : "Methanol",
-
+      organic,
 
       buffer:
 
@@ -180,14 +240,9 @@ export function runMethodEngine(
 
       pH:
 
-        molecule.pKa < 5
-
-        ? 3
-
-        : 6.5
+        recommendedPH
 
     }
-
 
   };
 
