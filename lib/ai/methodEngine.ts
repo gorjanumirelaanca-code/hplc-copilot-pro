@@ -3,15 +3,10 @@ export interface MethodEngineResult {
   prediction: {
 
     retentionTime: number;
-
     resolution: number;
-
     tailingFactor: number;
-
     capacityFactor: number;
-
     peakWidth: number;
-
     selectivity: number;
 
   };
@@ -23,9 +18,7 @@ export interface MethodEngineResult {
   column: {
 
     column: string;
-
     particle: string;
-
     dimensions: string;
 
   };
@@ -34,9 +27,7 @@ export interface MethodEngineResult {
   mobilePhase: {
 
     organic: string;
-
     buffer: string;
-
     pH: number;
 
   };
@@ -44,11 +35,11 @@ export interface MethodEngineResult {
 
   gradient: {
 
-    start: string;
-
-    end: string;
-
-    time: string;
+    organicStart: number;
+    organicEnd: number;
+    flow: number;
+    temperature: number;
+    recommendation: string;
 
   };
 
@@ -65,16 +56,26 @@ export function runMethodEngine(
 ): MethodEngineResult {
 
 
-  const logP = molecule.xlogP ?? molecule.logP ?? 2;
+  const logP =
+    molecule.xlogP ??
+    molecule.logP ??
+    2;
 
-  const tpsa = molecule.tpsa ?? 40;
+
+  const tpsa =
+    molecule.tpsa ??
+    40;
+
 
   const molecularWeight =
-    molecule.molecularWeight ?? 250;
+    molecule.molecularWeight ??
+    250;
+
 
 
   const organic =
-    method.organic ?? 50;
+    method.organic ??
+    50;
 
 
 
@@ -90,64 +91,42 @@ export function runMethodEngine(
 
   const prediction = {
 
-
     retentionTime:
-
       Number(retentionTime.toFixed(2)),
 
 
     resolution:
-
       Number(
-
         (1.8 + tpsa / 100)
-
         .toFixed(2)
-
       ),
 
 
     tailingFactor:
-
       Number(
-
         (1.1 + molecularWeight / 5000)
-
         .toFixed(2)
-
       ),
 
 
     capacityFactor:
-
       Number(
-
         (retentionTime / 0.5)
-
         .toFixed(2)
-
       ),
 
 
     peakWidth:
-
       Number(
-
         (retentionTime * 0.08)
-
         .toFixed(2)
-
       ),
 
 
     selectivity:
-
       Number(
-
         (1 + Math.abs(logP) / 10)
-
         .toFixed(2)
-
       )
 
   };
@@ -175,31 +154,49 @@ export function runMethodEngine(
   const gradient = {
 
 
-    start:
+    organicStart:
 
-      organic > 60
+      logP > 3
 
-      ? "60% Organic"
+        ? 30
 
-      : "30% Organic",
-
-
-    end:
-
-      organic > 60
-
-      ? "90% Organic"
-
-      : "80% Organic",
+        : 10,
 
 
-    time:
+    organicEnd:
+
+      logP > 3
+
+        ? 90
+
+        : 70,
+
+
+    flow:
 
       molecularWeight > 500
 
-      ? "25 min"
+        ? 0.8
 
-      : "15 min"
+        : 1.0,
+
+
+    temperature:
+
+      molecularWeight > 500
+
+        ? 35
+
+        : 30,
+
+
+    recommendation:
+
+      logP > 3
+
+        ? "High organic gradient recommended for hydrophobic compounds."
+
+        : "Moderate gradient recommended for balanced retention and resolution."
 
   };
 
@@ -214,22 +211,15 @@ export function runMethodEngine(
     score,
 
 
-
     column: {
 
-
       column:
-
         "C18 Reversed Phase",
 
-
       particle:
-
         "5 µm",
 
-
       dimensions:
-
         "150 × 4.6 mm"
 
     },
@@ -238,33 +228,28 @@ export function runMethodEngine(
 
     mobilePhase: {
 
-
       organic:
 
         organic > 60
 
-        ? "Acetonitrile"
+          ? "Acetonitrile"
 
-        : "Methanol",
-
+          : "Methanol",
 
 
       buffer:
-
         "Phosphate Buffer",
-
 
 
       pH:
 
         molecule.pKa < 5
 
-        ? 3
+          ? 3
 
-        : 6.5
+          : 6.5
 
     },
-
 
 
     gradient
